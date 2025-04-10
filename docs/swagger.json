@@ -66,18 +66,18 @@
                 "summary": "Авторизация",
                 "parameters": [
                     {
-                        "description": "Данные нового пользователя",
+                        "description": "Данные авторизации пользователя",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.RegisterReq"
+                            "$ref": "#/definitions/model.LoginReq"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Успешная авторизациян",
+                        "description": "Успешная авторизация",
                         "schema": {
                             "$ref": "#/definitions/model.AuthResponse"
                         }
@@ -164,6 +164,87 @@
             }
         },
         "/pvz": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Получение списка ПВЗ с фильтрацией по дате приемки и пагинацией",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Получение списка ПВЗ",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Начальная дата",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Конечная дата",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Номер страницы (начиная с 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 30,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Количество элементов на странице",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список ПВЗ",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.PVZWithRecep"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный формат параметров",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован.",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещен.",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера.",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -460,6 +541,21 @@
                 }
             }
         },
+        "model.LoginReq": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "model.PVZReq": {
             "type": "object",
             "required": [
@@ -473,9 +569,6 @@
         },
         "model.PVZResp": {
             "type": "object",
-            "required": [
-                "city"
-            ],
             "properties": {
                 "city": {
                     "type": "string"
@@ -485,6 +578,20 @@
                 },
                 "registration_date": {
                     "type": "string"
+                }
+            }
+        },
+        "model.PVZWithRecep": {
+            "type": "object",
+            "properties": {
+                "pvz": {
+                    "$ref": "#/definitions/model.PVZResp"
+                },
+                "receptions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ReceptionsItem"
+                    }
                 }
             }
         },
@@ -517,6 +624,20 @@
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "model.ReceptionsItem": {
+            "type": "object",
+            "properties": {
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ProductsResp"
+                    }
+                },
+                "reception": {
+                    "$ref": "#/definitions/model.ReceptionsResp"
                 }
             }
         },

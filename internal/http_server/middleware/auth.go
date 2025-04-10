@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"slices"
 	"strings"
 
 	"github.com/go-chi/render"
@@ -19,7 +20,7 @@ const RequestUserIDKey ctxKeyRequestUserID = "user_id"
 
 func Auth(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		const op = "internal.http_server.middlweare.Authorization()"
+		const op = "internal.http_server.middleware.Auth()"
 
 		logger := log.With().Str("fn", op).Logger()
 		logger.Debug().Msg("auth start")
@@ -62,11 +63,12 @@ func Auth(next http.Handler) http.Handler {
 			return
 		}
 
-		if requestUserRole != "client" && requestUserRole != "moderator" {
+		roles := []string{"client", "moderator"}
+		if !slices.Contains(roles, requestUserRole) {
 			logger.Error().Msg("Invalid user role")
 
-			w.WriteHeader(http.StatusUnauthorized) // 401
-			render.JSON(w, r, model.ReturnErrResp("Неавторизован."))
+			w.WriteHeader(http.StatusForbidden) // 403
+			render.JSON(w, r, model.ReturnErrResp("Доступ запрещен."))
 			return
 		}
 

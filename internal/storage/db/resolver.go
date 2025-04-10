@@ -109,6 +109,10 @@ func (r *Storage) AddReception(pvzID uuid.UUID) (*model.ReceptionsResp, error) {
 	}
 
 	_, err = tx.Exec(queryAddReceptions, receptions.ID, receptions.PVZID, receptions.Status, receptions.DateTime)
+	if err != nil {
+		err = fmt.Errorf("%s:%w", op, err)
+		return nil, err
+	}
 
 	err = tx.Commit()
 	if err != nil {
@@ -282,9 +286,9 @@ func (r *Storage) CloseLastReceptions(pvzID uuid.UUID) error {
 		if err == sql.ErrNoRows {
 			err = storage.ErrProductsInReceptionNotExist
 			return err
-		} else {
-			return fmt.Errorf("%s:%w", op, err)
 		}
+		return fmt.Errorf("%s:%w", op, err)
+
 	}
 
 	err = tx.Commit()
@@ -376,4 +380,213 @@ func (r *Storage) Login(email string, password string) (userID uuid.UUID, role s
 	log.Debug().Msgf("%s end", op)
 	return userID, role, nil
 
+}
+
+func (r *Storage) GetPVZList(startDate, endDate time.Time, page, limit int) ([]*model.PVZWithRecep, error) {
+	op := "internal.storage.db.GetPVZList()"
+	log.Debug().Msgf("%s start", op)
+
+	var pvzList []*model.PVZWithRecep
+	var err error
+	if startDate.IsZero() && endDate.IsZero() {
+		pvzList, err = r.getPVZListByPVZ(page, limit)
+	} else {
+		pvzList, err = r.getPVZListByReceptionsDate(startDate, endDate, page, limit)
+	}
+
+	log.Debug().Msgf("%s end", startDate)
+	return pvzList, err
+}
+
+func (r *Storage) getPVZListByReceptionsDate(startDate, endDate time.Time, page, limit int) ([]*model.PVZWithRecep, error) {
+	op := "internal.storage.db.getPVZListByReceptionsDate()"
+	log.Debug().Msgf("%s start", op)
+
+	tx, err := r.db.Beginx()
+	if err != nil {
+		return nil, fmt.Errorf("%s:%w", op, err)
+	}
+	defer func() {
+		if err != nil {
+			errRB := tx.Rollback()
+			if errRB != nil {
+				log.Error().Err(errRB).Msg("roll back transaction failed")
+			}
+		}
+	}()
+
+	// we don't check startDate because if startDate is zero then it is always ahead of any time
+	if endDate.IsZero() {
+		endDate = time.Now() // if endDate is not set, set it to now, because time cannot be the future
+	}
+
+	var pvzList []*model.PVZResp
+	var receptionsList []*model.ReceptionsResp
+	var productsList []*model.ProductsResp
+	queryGetReceptionsList := `SELECT id, pvz_id, status, registration_date
+								FROM receptions
+								WHERE registration_date BETWEEN $1 AND $2
+								ORDER BY registration_date`
+
+	err = tx.Select(&receptionsList, queryGetReceptionsList, startDate, endDate)
+	if err != nil {
+		return nil, fmt.Errorf("%s:%w", op, err)
+	}
+
+	if len(receptionsList) == 0 {
+		return createPVZList(pvzList, receptionsList, productsList), nil
+	}
+
+	queryGetPVZList := `SELECT id,city, registration_date
+						FROM pvzs
+						WHERE id = ANY($1)
+						ORDER BY registration_date
+						lIMIT $2 OFFSET $3`
+
+	pvzIDs := make([]uuid.UUID, len(receptionsList))
+	for i, reception := range receptionsList {
+		pvzIDs[i] = reception.PVZID
+	}
+
+	err = r.db.Select(&pvzList, queryGetPVZList, pvzIDs, limit, (page-1)*limit)
+	if err != nil {
+		return nil, fmt.Errorf("%s:%w", op, err)
+	}
+	if len(pvzList) == 0 {
+		return createPVZList(pvzList, receptionsList, productsList), nil
+	}
+
+	queryGetProductsList := `SELECT id, reception_id, type, registration_date
+							FROM products
+							WHERE reception_id IN
+							(SELECT id
+							FROM receptions
+							WHERE pvz_id = ANY($1) AND
+							registration_date BETWEEN $2 AND $3
+							ORDER BY registration_date)
+							ORDER BY registration_date`
+
+	err = r.db.Select(&productsList, queryGetProductsList, pvzIDs, startDate, endDate)
+	if err != nil {
+		return nil, fmt.Errorf("%s:%w", op, err)
+	}
+
+	log.Debug().Msgf("%s end", op)
+	return createPVZList(pvzList, receptionsList, productsList), nil
+}
+
+func (r *Storage) getPVZListByPVZ(page, limit int) ([]*model.PVZWithRecep, error) {
+	op := "internal.storage.db.getPVZListByPVZ()"
+	log.Debug().Msgf("%s start", op)
+
+	tx, err := r.db.Beginx()
+	if err != nil {
+		return nil, fmt.Errorf("%s:%w", op, err)
+	}
+	defer func() {
+		if err != nil {
+			errRB := tx.Rollback()
+			if errRB != nil {
+				log.Error().Err(errRB).Msg("roll back transaction failed")
+			}
+		}
+	}()
+
+	var pvzList []*model.PVZResp
+	var receptionsList []*model.ReceptionsResp
+	var productsList []*model.ProductsResp
+	queryGetPVZList := `SELECT id, registration_date, city
+						FROM pvzs
+						ORDER BY registration_date 
+						LIMIT $1 OFFSET $2`
+
+	err = tx.Select(&pvzList, queryGetPVZList, limit, (page-1)*limit)
+	if err != nil {
+		return nil, fmt.Errorf("%s:%w", op, err)
+	}
+	if len(pvzList) == 0 {
+		return createPVZList(pvzList, receptionsList, productsList), nil
+	}
+
+	queryGetReceptionsList := `SELECT id, pvz_id, status, registration_date
+								FROM receptions
+								WHERE pvz_id IN
+								(SELECT id 
+								FROM pvzs 
+								ORDER BY registration_date
+								LIMIT $1 OFFSET $2)
+								ORDER BY registration_date`
+
+	err = tx.Select(&receptionsList, queryGetReceptionsList, limit, (page-1)*limit)
+	if err != nil {
+		return nil, fmt.Errorf("%s:%w", op, err)
+	}
+	if len(receptionsList) == 0 {
+		return createPVZList(pvzList, receptionsList, productsList), nil
+	}
+
+	queryGetProductsList := `SELECT id, reception_id, type, registration_date
+							FROM products
+							WHERE reception_id IN
+							(SELECT id
+							FROM receptions
+							WHERE pvz_id IN
+							(SELECT id
+							FROM pvzs 
+							ORDER BY registration_date
+							LIMIT $1 OFFSET $2)
+							ORDER BY registration_date)
+							ORDER BY registration_date`
+
+	err = tx.Select(&productsList, queryGetProductsList, limit, (page-1)*limit)
+	if err != nil {
+		return nil, fmt.Errorf("%s:%w", op, err)
+	}
+
+	log.Debug().Msgf("%s end", op)
+	return createPVZList(pvzList, receptionsList, productsList), nil
+}
+
+func createPVZList(pvzList []*model.PVZResp, receptionsList []*model.ReceptionsResp, productsList []*model.ProductsResp) []*model.PVZWithRecep {
+	op := "internal.storage.db.createPVZList()"
+	log.Debug().Msgf("%s start", op)
+
+	if pvzList == nil {
+		return make([]*model.PVZWithRecep, 0)
+	}
+
+	var pvzWithRespList []*model.PVZWithRecep
+	pvzWithRespList = make([]*model.PVZWithRecep, 0, len(pvzList))
+
+	for _, pvz := range pvzList {
+
+		pvzWithResp := &model.PVZWithRecep{
+			PVZ:        *pvz,
+			Receptions: make([]*model.ReceptionsItem, 0),
+		}
+
+		for _, reception := range receptionsList {
+
+			if reception.PVZID == pvz.ID {
+
+				receptionsItem := &model.ReceptionsItem{
+					Reception: reception,
+					Products:  make([]*model.ProductsResp, 0),
+				}
+
+				for _, product := range productsList {
+					if product.ReceptionID == reception.ID {
+						receptionsItem.Products = append(receptionsItem.Products, product)
+					}
+				}
+
+				pvzWithResp.Receptions = append(pvzWithResp.Receptions, receptionsItem)
+			}
+		}
+		pvzWithRespList = append(pvzWithRespList, pvzWithResp)
+	}
+
+	log.Debug().Msgf("%s end", op)
+
+	return pvzWithRespList
 }

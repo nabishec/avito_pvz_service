@@ -10,6 +10,16 @@ definitions:
       errors:
         type: string
     type: object
+  model.LoginReq:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
   model.PVZReq:
     properties:
       city:
@@ -25,8 +35,15 @@ definitions:
         type: string
       registration_date:
         type: string
-    required:
-    - city
+    type: object
+  model.PVZWithRecep:
+    properties:
+      pvz:
+        $ref: '#/definitions/model.PVZResp'
+      receptions:
+        items:
+          $ref: '#/definitions/model.ReceptionsItem'
+        type: array
     type: object
   model.ProductsReq:
     properties:
@@ -48,6 +65,15 @@ definitions:
         type: string
       type:
         type: string
+    type: object
+  model.ReceptionsItem:
+    properties:
+      products:
+        items:
+          $ref: '#/definitions/model.ProductsResp'
+        type: array
+      reception:
+        $ref: '#/definitions/model.ReceptionsResp'
     type: object
   model.ReceptionsReq:
     properties:
@@ -141,17 +167,17 @@ paths:
       - application/json
       description: Авторизация пользователя
       parameters:
-      - description: Данные нового пользователя
+      - description: Данные авторизации пользователя
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/model.RegisterReq'
+          $ref: '#/definitions/model.LoginReq'
       produces:
       - application/json
       responses:
         "200":
-          description: Успешная авторизациян
+          description: Успешная авторизация
           schema:
             $ref: '#/definitions/model.AuthResponse'
         "400":
@@ -206,6 +232,60 @@ paths:
       - BearerAuth: []
       summary: Добавление товара
   /pvz:
+    get:
+      consumes:
+      - application/json
+      description: Получение списка ПВЗ с фильтрацией по дате приемки и пагинацией
+      parameters:
+      - description: Начальная дата
+        in: query
+        name: startDate
+        type: string
+      - description: Конечная дата
+        in: query
+        name: endDate
+        type: string
+      - default: 1
+        description: Номер страницы (начиная с 1)
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 10
+        description: Количество элементов на странице
+        in: query
+        maximum: 30
+        minimum: 1
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список ПВЗ
+          schema:
+            items:
+              $ref: '#/definitions/model.PVZWithRecep'
+            type: array
+        "400":
+          description: Неверный формат параметров
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Неавторизован.
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: Доступ запрещен.
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера.
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Получение списка ПВЗ
     post:
       consumes:
       - application/json
