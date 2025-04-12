@@ -61,7 +61,7 @@ func (h *PVZ) GetPVZList(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if startDate != "" {
-		startDateTime, err = time.Parse(time.DateOnly, startDate)
+		startDateTime, err = time.Parse(time.RFC3339, startDate)
 		if err != nil {
 			logger.Error().Err(err).Msg("Incorrect start time parameter")
 
@@ -72,7 +72,7 @@ func (h *PVZ) GetPVZList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if endDate != "" {
-		endDateTime, err = time.Parse(time.DateOnly, endDate)
+		endDateTime, err = time.Parse(time.RFC3339, endDate)
 		if err != nil {
 			logger.Error().Err(err).Msg("Incorrect end time parameter")
 

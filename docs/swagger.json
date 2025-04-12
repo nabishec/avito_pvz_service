@@ -576,7 +576,7 @@
                 "id": {
                     "type": "string"
                 },
-                "registration_date": {
+                "registrationDate": {
                     "type": "string"
                 }
             }
@@ -598,11 +598,11 @@
         "model.ProductsReq": {
             "type": "object",
             "required": [
-                "pvz_id",
+                "pvzId",
                 "type"
             ],
             "properties": {
-                "pvz_id": {
+                "pvzId": {
                     "type": "string"
                 },
                 "type": {
@@ -613,13 +613,13 @@
         "model.ProductsResp": {
             "type": "object",
             "properties": {
-                "date_time": {
+                "dateTime": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "reception_id": {
+                "receptionId": {
                     "type": "string"
                 },
                 "type": {
@@ -644,10 +644,10 @@
         "model.ReceptionsReq": {
             "type": "object",
             "required": [
-                "pvz_id"
+                "pvzId"
             ],
             "properties": {
-                "pvz_id": {
+                "pvzId": {
                     "type": "string"
                 }
             }
@@ -655,13 +655,13 @@
         "model.ReceptionsResp": {
             "type": "object",
             "properties": {
-                "date_time": {
+                "dateTime": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "pvz_id": {
+                "pvzId": {
                     "type": "string"
                 },
                 "status": {

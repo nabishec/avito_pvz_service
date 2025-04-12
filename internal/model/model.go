@@ -40,31 +40,31 @@ type PVZReq struct {
 
 type PVZResp struct {
 	ID               uuid.UUID `json:"id" db:"id"`
-	RegistrationDate time.Time `json:"registration_date" db:"registration_date"`
+	RegistrationDate time.Time `json:"registrationDate" db:"registration_date"`
 	City             string    `json:"city" db:"city"`
 }
 
 type ReceptionsResp struct {
 	ID       uuid.UUID `json:"id" db:"id"`
-	DateTime time.Time `json:"date_time" db:"registration_date"`
-	PVZID    uuid.UUID `json:"pvz_id" db:"pvz_id"`
+	DateTime time.Time `json:"dateTime" db:"registration_date"`
+	PVZID    uuid.UUID `json:"pvzId" db:"pvz_id"`
 	Status   string    `json:"status" db:"status"`
 }
 
 type ReceptionsReq struct {
-	PVZID string `json:"pvz_id" validate:"required"`
+	PVZID string `json:"pvzId" validate:"required"`
 }
 
 type ProductsReq struct {
 	Type  string `json:"type" validate:"required"`
-	PVZID string `json:"pvz_id" validate:"required"`
+	PVZID string `json:"pvzId" validate:"required"`
 }
 
 type ProductsResp struct {
 	ID          uuid.UUID `json:"id" db:"id"`
-	DateTime    time.Time `json:"date_time" db:"registration_date"`
+	DateTime    time.Time `json:"dateTime" db:"registration_date"`
 	Type        string    `json:"type" db:"type"`
-	ReceptionID uuid.UUID `json:"reception_id" db:"reception_id"`
+	ReceptionID uuid.UUID `json:"receptionId" db:"reception_id"`
 }
 
 type RegisterReq struct {

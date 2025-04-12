@@ -580,7 +580,7 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "registration_date": {
+                "registrationDate": {
                     "type": "string"
                 }
             }
@@ -602,11 +602,11 @@ const docTemplate = `{
         "model.ProductsReq": {
             "type": "object",
             "required": [
-                "pvz_id",
+                "pvzId",
                 "type"
             ],
             "properties": {
-                "pvz_id": {
+                "pvzId": {
                     "type": "string"
                 },
                 "type": {
@@ -617,13 +617,13 @@ const docTemplate = `{
         "model.ProductsResp": {
             "type": "object",
             "properties": {
-                "date_time": {
+                "dateTime": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "reception_id": {
+                "receptionId": {
                     "type": "string"
                 },
                 "type": {
@@ -648,10 +648,10 @@ const docTemplate = `{
         "model.ReceptionsReq": {
             "type": "object",
             "required": [
-                "pvz_id"
+                "pvzId"
             ],
             "properties": {
-                "pvz_id": {
+                "pvzId": {
                     "type": "string"
                 }
             }
@@ -659,13 +659,13 @@ const docTemplate = `{
         "model.ReceptionsResp": {
             "type": "object",
             "properties": {
-                "date_time": {
+                "dateTime": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "pvz_id": {
+                "pvzId": {
                     "type": "string"
                 },
                 "status": {

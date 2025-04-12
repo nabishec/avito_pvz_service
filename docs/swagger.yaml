@@ -33,7 +33,7 @@ definitions:
         type: string
       id:
         type: string
-      registration_date:
+      registrationDate:
         type: string
     type: object
   model.PVZWithRecep:
@@ -47,21 +47,21 @@ definitions:
     type: object
   model.ProductsReq:
     properties:
-      pvz_id:
+      pvzId:
         type: string
       type:
         type: string
     required:
-    - pvz_id
+    - pvzId
     - type
     type: object
   model.ProductsResp:
     properties:
-      date_time:
+      dateTime:
         type: string
       id:
         type: string
-      reception_id:
+      receptionId:
         type: string
       type:
         type: string
@@ -77,18 +77,18 @@ definitions:
     type: object
   model.ReceptionsReq:
     properties:
-      pvz_id:
+      pvzId:
         type: string
     required:
-    - pvz_id
+    - pvzId
     type: object
   model.ReceptionsResp:
     properties:
-      date_time:
+      dateTime:
         type: string
       id:
         type: string
-      pvz_id:
+      pvzId:
         type: string
       status:
         type: string
