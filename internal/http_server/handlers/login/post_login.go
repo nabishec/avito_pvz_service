@@ -64,21 +64,21 @@ func (h *Login) Login(w http.ResponseWriter, r *http.Request) {
 			logger.Error().Err(err).Msg("Password is empty")
 
 			w.WriteHeader(http.StatusUnauthorized) // 401
-			render.JSON(w, r, model.ReturnErrResp("Неверный запрос."))
+			render.JSON(w, r, model.ReturnErrResp("Неверные учетные данные."))
 			return
 		}
 		if err == storage.ErrPasswordIsWrong {
 			logger.Error().Err(err).Msg("Password is wrong")
 
 			w.WriteHeader(http.StatusUnauthorized) // 401
-			render.JSON(w, r, model.ReturnErrResp("Неверный запрос."))
+			render.JSON(w, r, model.ReturnErrResp("Неверные учетные данные."))
 			return
 		}
 		if err == storage.ErrUserNotExist {
 			logger.Error().Err(err).Msg("User not exist")
 
 			w.WriteHeader(http.StatusUnauthorized) // 401
-			render.JSON(w, r, model.ReturnErrResp("Неверный запрос."))
+			render.JSON(w, r, model.ReturnErrResp("Неверные учетные данные."))
 			return
 		}
 		logger.Error().Msg("Failed to add user to database")

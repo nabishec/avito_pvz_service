@@ -75,8 +75,8 @@ func (h *Receptions) AddReceptions(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logger.Error().Msg("Failed to get pvzID")
 
-		w.WriteHeader(http.StatusInternalServerError) // 500
-		render.JSON(w, r, model.ReturnErrResp("Внутренняя ошибка сервера."))
+		w.WriteHeader(http.StatusBadRequest) // 400
+		render.JSON(w, r, model.ReturnErrResp("Неверный запрос или есть незакрытая приемка."))
 		return
 	}
 

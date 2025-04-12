@@ -53,7 +53,6 @@ func main() {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}
 
-	// delete in product
 	err := LoadEnv()
 	if err != nil {
 		log.Error().Err(err).Msg("Configuration not found")
@@ -147,7 +146,6 @@ func CreateNewServer(storage storage.StorageImp) *Server {
 	return s
 }
 
-// delete in future
 func LoadEnv() error {
 	const op = "cmd.loadEnv()"
 	err := godotenv.Load(".env")

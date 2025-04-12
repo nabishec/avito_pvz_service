@@ -43,7 +43,13 @@ func (h *PVZ) GetPVZList(w http.ResponseWriter, r *http.Request) {
 	logger.Debug().Msg("Request for get pvz list has been received")
 
 	defaultPage := os.Getenv("DEFAULT_PAGE")
+	if defaultPage == "" {
+		defaultPage = "1"
+	}
 	defaultLimit := os.Getenv("DEFAULT_LIMIT")
+	if defaultLimit == "" {
+		defaultLimit = "10"
+	}
 
 	var startDate = r.URL.Query().Get("startDate")
 	var endDate = r.URL.Query().Get("endDate")

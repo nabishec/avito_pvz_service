@@ -458,12 +458,13 @@ func (r *Storage) getPVZListByReceptionsDate(startDate, endDate time.Time, page,
 
 	queryGetProductsList := `SELECT id, reception_id, type, registration_date
 							FROM products
-							WHERE reception_id IN
-							(SELECT id
-							FROM receptions
-							WHERE pvz_id = ANY($1) AND
-							registration_date BETWEEN $2 AND $3
-							ORDER BY registration_date)
+							WHERE reception_id IN (
+								SELECT id
+								FROM receptions
+								WHERE pvz_id = ANY($1) AND
+								registration_date BETWEEN $2 AND $3
+								ORDER BY registration_date
+							)
 							ORDER BY registration_date`
 
 	err = r.db.Select(&productsList, queryGetProductsList, pvzIDs, startDate, endDate)
@@ -510,11 +511,12 @@ func (r *Storage) getPVZListByPVZ(page, limit int) ([]*model.PVZWithRecep, error
 
 	queryGetReceptionsList := `SELECT id, pvz_id, status, registration_date
 								FROM receptions
-								WHERE pvz_id IN
-								(SELECT id 
-								FROM pvzs 
-								ORDER BY registration_date
-								LIMIT $1 OFFSET $2)
+								WHERE pvz_id IN (
+									SELECT id 
+									FROM pvzs 
+									ORDER BY registration_date
+									LIMIT $1 OFFSET $2
+								)
 								ORDER BY registration_date`
 
 	err = tx.Select(&receptionsList, queryGetReceptionsList, limit, (page-1)*limit)
@@ -527,15 +529,17 @@ func (r *Storage) getPVZListByPVZ(page, limit int) ([]*model.PVZWithRecep, error
 
 	queryGetProductsList := `SELECT id, reception_id, type, registration_date
 							FROM products
-							WHERE reception_id IN
-							(SELECT id
-							FROM receptions
-							WHERE pvz_id IN
-							(SELECT id
-							FROM pvzs 
-							ORDER BY registration_date
-							LIMIT $1 OFFSET $2)
-							ORDER BY registration_date)
+							WHERE reception_id IN (
+								SELECT id
+								FROM receptions
+								WHERE pvz_id IN (
+									SELECT id
+									FROM pvzs 
+									ORDER BY registration_date
+									LIMIT $1 OFFSET $2
+									)
+								ORDER BY registration_date
+							)
 							ORDER BY registration_date`
 
 	err = tx.Select(&productsList, queryGetProductsList, limit, (page-1)*limit)

@@ -63,8 +63,8 @@ func (h *CloseLastReceptions) CloseLastReceptions(w http.ResponseWriter, r *http
 	if err != nil {
 		logger.Error().Msg("Failed to get pvzID")
 
-		w.WriteHeader(http.StatusInternalServerError) // 500
-		render.JSON(w, r, model.ReturnErrResp("Внутренняя ошибка сервера."))
+		w.WriteHeader(http.StatusBadRequest) // 400
+		render.JSON(w, r, model.ReturnErrResp("Неверный запрос или приемка уже закрыта"))
 		return
 	}
 
