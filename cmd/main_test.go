@@ -94,7 +94,7 @@ func TestService(t *testing.T) {
 
 	t.Run("Add Reception", func(t *testing.T) {
 		reqBody := map[string]string{
-			"pvz_id": pvzResp.ID.String(),
+			"pvzId": pvzResp.ID.String(),
 		}
 
 		jsonReq, err := json.Marshal(reqBody)
@@ -115,8 +115,8 @@ func TestService(t *testing.T) {
 		var wg sync.WaitGroup
 
 		reqBody := map[string]string{
-			"pvz_id": pvzResp.ID.String(),
-			"type":   "обувь",
+			"pvzId": pvzResp.ID.String(),
+			"type":  "обувь",
 		}
 
 		jsonReq, err := json.Marshal(reqBody)
