@@ -55,9 +55,12 @@ services:
       DEFAULT_PAGE: ${DEFAULT_PAGE}
       DEFAULT_LIMIT: ${DEFAULT_LIMIT}
       GRPC_SERVER_PORT: ${GRPC_SERVER_PORT}
+      INTERNAL_PROMETHEUS_PORT: ${INTERNAL_PROMETHEUS_PORT}
     ports:
       - "127.0.0.1:8080:8080"
       - "127.0.0.1:3000:3000"
+    expose:
+      - "9090"
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -67,6 +70,16 @@ services:
       - avito_pvz_network
     env_file:
       - .env
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "127.0.0.1:9000:9090"
+    networks:
+      - avito_pvz_network
+      
 networks:
   avito_pvz_network:
     driver: bridge

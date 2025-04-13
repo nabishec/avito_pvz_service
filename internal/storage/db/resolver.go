@@ -613,3 +613,44 @@ func (r *Storage) GetPVZList() ([]*model.PVZResp, error) {
 	log.Debug().Msgf("%s end", op)
 	return pvzList, nil
 }
+
+func (r *Storage) GetValuesForMetrics() (pvzs int, receptions int, products int, err error) {
+	op := "internal.storage.db.GetValuesForMetrics()"
+
+	log.Debug().Msgf("%s start", op)
+	tx, err := r.db.Beginx()
+	if err != nil {
+		return 0, 0, 0, fmt.Errorf("%s:%w", op, err)
+	}
+	defer func() {
+		if err != nil {
+			errRB := tx.Rollback()
+			if errRB != nil {
+				log.Error().Err(errRB).Msg("roll back transaction failed")
+			}
+		}
+	}()
+
+	queryGetPVZsCount := `SELECT COUNT(*)
+							FROM pvzs`
+	queryGetReceptionsCount := `SELECT COUNT(*)
+							FROM receptions`
+	queryGetProductsCount := `SELECT COUNT(*)
+							FROM products`
+
+	err = tx.QueryRow(queryGetPVZsCount).Scan(&pvzs)
+	if err != nil {
+		return 0, 0, 0, fmt.Errorf("%s:%w", op, err)
+	}
+	err = tx.QueryRow(queryGetReceptionsCount).Scan(&receptions)
+	if err != nil {
+		return 0, 0, 0, fmt.Errorf("%s:%w", op, err)
+	}
+	err = tx.QueryRow(queryGetProductsCount).Scan(&products)
+	if err != nil {
+		return 0, 0, 0, fmt.Errorf("%s:%w", op, err)
+	}
+
+	log.Debug().Msgf("%s end", op)
+	return pvzs, receptions, products, nil
+}

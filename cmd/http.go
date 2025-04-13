@@ -46,6 +46,8 @@ func (s *httpServer) MountHandlers() {
 	login := login.NewLogin(s.Storage)
 	pvzList := getpvzlist.NewPVZ(s.Storage)
 
+	s.Router.Use(custommiddleware.MetricsRecorder)
+
 	s.Router.Group(func(r chi.Router) {
 		r.Post("/dummyLogin", rootToken.ReturnRootToken)
 		r.Get("/swagger/*", httpSwagger.WrapHandler)

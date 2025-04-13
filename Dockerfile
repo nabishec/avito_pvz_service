@@ -6,6 +6,6 @@ COPY . .
 
 RUN go build -o main ./cmd/main.go ./cmd/grpc.go ./cmd/http.go
 
-EXPOSE 8080 3000
+EXPOSE 8080 3000 9090
 
 CMD [ "./main" ]

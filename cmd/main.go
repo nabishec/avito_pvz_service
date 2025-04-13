@@ -3,13 +3,17 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
+
 	"sync"
 
 	"github.com/joho/godotenv"
 	dbconnection "github.com/nabishec/avito_pvz_service/cmd/db_connection"
 	_ "github.com/nabishec/avito_pvz_service/docs"
+	"github.com/nabishec/avito_pvz_service/internal/metrics"
 	"github.com/nabishec/avito_pvz_service/internal/storage/db"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -57,6 +61,7 @@ func main() {
 
 	grpcServer := NewGRPCServer(storage)
 	httpServer := NewHTTPServer(storage)
+	serverPrometheus := NewHTTPServer(storage)
 
 	//  run server
 	var wg sync.WaitGroup
@@ -67,6 +72,23 @@ func main() {
 		err := grpcServer.Run()
 		if err != nil {
 			log.Error().Err(err).Msg("grpc server stopped")
+			return
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		serverPrometheus.Router.Handle("/metrics", promhttp.Handler())
+		metricsRecorder := metrics.NewMetrics(storage)
+		go metricsRecorder.CheckMetricsFromDBCircle()
+
+		addr := ":" + os.Getenv("INTERNAL_PROMETHEUS_PORT")
+		log.Info().Msgf("Starting prometheus connection to app on %s", addr)
+		err := http.ListenAndServe(addr, serverPrometheus.Router)
+		if err != nil {
+			log.Error().Err(err).Msg("prometheus connection stopped")
 			return
 		}
 	}()

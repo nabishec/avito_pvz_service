@@ -17,4 +17,5 @@ type StorageImp interface {
 	Login(email string, password string) (uuid.UUID, string, error)
 	GetPVZListWithRecep(startDate, endDate time.Time, page, limit int) ([]*model.PVZWithRecep, error)
 	GetPVZList() ([]*model.PVZResp, error)
+	GetValuesForMetrics() (pvzs int, receptions int, products int, err error)
 }
