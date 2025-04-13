@@ -13,7 +13,7 @@ import (
 	"github.com/nabishec/avito_pvz_service/internal/storage/db"
 )
 
-func executeRequest(req *http.Request, s *Server) *httptest.ResponseRecorder {
+func executeRequest(req *http.Request, s *httpServer) *httptest.ResponseRecorder {
 	rr := httptest.NewRecorder()
 	s.Router.ServeHTTP(rr, req)
 
@@ -26,7 +26,7 @@ func checkResponseCode(t *testing.T, expected, actual int) {
 	}
 }
 
-func testGetTokenForClient(t *testing.T, s *Server, role string) string {
+func testGetTokenForClient(t *testing.T, s *httpServer, role string) string {
 	reqBody := map[string]string{
 		"role": role,
 	}
@@ -63,7 +63,7 @@ func TestService(t *testing.T) {
 
 	storage := db.NewStorage(dbConnection.DB)
 
-	s := CreateNewServer(storage)
+	s := NewHTTPServer(storage)
 	s.MountHandlers()
 	tokenClient := testGetTokenForClient(t, s, "client")
 	tokenModerator := testGetTokenForClient(t, s, "moderator")

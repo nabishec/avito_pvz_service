@@ -382,8 +382,8 @@ func (r *Storage) Login(email string, password string) (userID uuid.UUID, role s
 
 }
 
-func (r *Storage) GetPVZList(startDate, endDate time.Time, page, limit int) ([]*model.PVZWithRecep, error) {
-	op := "internal.storage.db.GetPVZList()"
+func (r *Storage) GetPVZListWithRecep(startDate, endDate time.Time, page, limit int) ([]*model.PVZWithRecep, error) {
+	op := "internal.storage.db.GetPVZListWithRecep()"
 	log.Debug().Msgf("%s start", op)
 
 	var pvzList []*model.PVZWithRecep
@@ -593,4 +593,23 @@ func createPVZList(pvzList []*model.PVZResp, receptionsList []*model.ReceptionsR
 	log.Debug().Msgf("%s end", op)
 
 	return pvzWithRespList
+}
+
+func (r *Storage) GetPVZList() ([]*model.PVZResp, error) {
+	op := "internal.storage.db.GetPVZList()"
+
+	log.Debug().Msgf("%s start", op)
+
+	var pvzList []*model.PVZResp
+
+	queryGetPVZList := `SELECT id, city, registration_date
+							FROM pvzs`
+
+	err := r.db.Select(&pvzList, queryGetPVZList)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Debug().Msgf("%s end", op)
+	return pvzList, nil
 }

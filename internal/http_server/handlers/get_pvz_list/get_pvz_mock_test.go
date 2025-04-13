@@ -19,12 +19,12 @@ type GetPVZMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
 
-	funcGetPVZList          func(startDate time.Time, endDate time.Time, page int, limit int) (ppa1 []*model.PVZWithRecep, err error)
-	funcGetPVZListOrigin    string
-	inspectFuncGetPVZList   func(startDate time.Time, endDate time.Time, page int, limit int)
-	afterGetPVZListCounter  uint64
-	beforeGetPVZListCounter uint64
-	GetPVZListMock          mGetPVZMockGetPVZList
+	funcGetPVZListWithRecep          func(startDate time.Time, endDate time.Time, page int, limit int) (ppa1 []*model.PVZWithRecep, err error)
+	funcGetPVZListWithRecepOrigin    string
+	inspectFuncGetPVZListWithRecep   func(startDate time.Time, endDate time.Time, page int, limit int)
+	afterGetPVZListWithRecepCounter  uint64
+	beforeGetPVZListWithRecepCounter uint64
+	GetPVZListWithRecepMock          mGetPVZMockGetPVZListWithRecep
 }
 
 // NewGetPVZMock returns a mock for GetPVZ
@@ -35,62 +35,62 @@ func NewGetPVZMock(t minimock.Tester) *GetPVZMock {
 		controller.RegisterMocker(m)
 	}
 
-	m.GetPVZListMock = mGetPVZMockGetPVZList{mock: m}
-	m.GetPVZListMock.callArgs = []*GetPVZMockGetPVZListParams{}
+	m.GetPVZListWithRecepMock = mGetPVZMockGetPVZListWithRecep{mock: m}
+	m.GetPVZListWithRecepMock.callArgs = []*GetPVZMockGetPVZListWithRecepParams{}
 
 	t.Cleanup(m.MinimockFinish)
 
 	return m
 }
 
-type mGetPVZMockGetPVZList struct {
+type mGetPVZMockGetPVZListWithRecep struct {
 	optional           bool
 	mock               *GetPVZMock
-	defaultExpectation *GetPVZMockGetPVZListExpectation
-	expectations       []*GetPVZMockGetPVZListExpectation
+	defaultExpectation *GetPVZMockGetPVZListWithRecepExpectation
+	expectations       []*GetPVZMockGetPVZListWithRecepExpectation
 
-	callArgs []*GetPVZMockGetPVZListParams
+	callArgs []*GetPVZMockGetPVZListWithRecepParams
 	mutex    sync.RWMutex
 
 	expectedInvocations       uint64
 	expectedInvocationsOrigin string
 }
 
-// GetPVZMockGetPVZListExpectation specifies expectation struct of the GetPVZ.GetPVZList
-type GetPVZMockGetPVZListExpectation struct {
+// GetPVZMockGetPVZListWithRecepExpectation specifies expectation struct of the GetPVZ.GetPVZListWithRecep
+type GetPVZMockGetPVZListWithRecepExpectation struct {
 	mock               *GetPVZMock
-	params             *GetPVZMockGetPVZListParams
-	paramPtrs          *GetPVZMockGetPVZListParamPtrs
-	expectationOrigins GetPVZMockGetPVZListExpectationOrigins
-	results            *GetPVZMockGetPVZListResults
+	params             *GetPVZMockGetPVZListWithRecepParams
+	paramPtrs          *GetPVZMockGetPVZListWithRecepParamPtrs
+	expectationOrigins GetPVZMockGetPVZListWithRecepExpectationOrigins
+	results            *GetPVZMockGetPVZListWithRecepResults
 	returnOrigin       string
 	Counter            uint64
 }
 
-// GetPVZMockGetPVZListParams contains parameters of the GetPVZ.GetPVZList
-type GetPVZMockGetPVZListParams struct {
+// GetPVZMockGetPVZListWithRecepParams contains parameters of the GetPVZ.GetPVZListWithRecep
+type GetPVZMockGetPVZListWithRecepParams struct {
 	startDate time.Time
 	endDate   time.Time
 	page      int
 	limit     int
 }
 
-// GetPVZMockGetPVZListParamPtrs contains pointers to parameters of the GetPVZ.GetPVZList
-type GetPVZMockGetPVZListParamPtrs struct {
+// GetPVZMockGetPVZListWithRecepParamPtrs contains pointers to parameters of the GetPVZ.GetPVZListWithRecep
+type GetPVZMockGetPVZListWithRecepParamPtrs struct {
 	startDate *time.Time
 	endDate   *time.Time
 	page      *int
 	limit     *int
 }
 
-// GetPVZMockGetPVZListResults contains results of the GetPVZ.GetPVZList
-type GetPVZMockGetPVZListResults struct {
+// GetPVZMockGetPVZListWithRecepResults contains results of the GetPVZ.GetPVZListWithRecep
+type GetPVZMockGetPVZListWithRecepResults struct {
 	ppa1 []*model.PVZWithRecep
 	err  error
 }
 
-// GetPVZMockGetPVZListOrigins contains origins of expectations of the GetPVZ.GetPVZList
-type GetPVZMockGetPVZListExpectationOrigins struct {
+// GetPVZMockGetPVZListWithRecepOrigins contains origins of expectations of the GetPVZ.GetPVZListWithRecep
+type GetPVZMockGetPVZListWithRecepExpectationOrigins struct {
 	origin          string
 	originStartDate string
 	originEndDate   string
@@ -103,348 +103,348 @@ type GetPVZMockGetPVZListExpectationOrigins struct {
 // Optional() makes method check to work in '0 or more' mode.
 // It is NOT RECOMMENDED to use this option unless you really need it, as default behaviour helps to
 // catch the problems when the expected method call is totally skipped during test run.
-func (mmGetPVZList *mGetPVZMockGetPVZList) Optional() *mGetPVZMockGetPVZList {
-	mmGetPVZList.optional = true
-	return mmGetPVZList
+func (mmGetPVZListWithRecep *mGetPVZMockGetPVZListWithRecep) Optional() *mGetPVZMockGetPVZListWithRecep {
+	mmGetPVZListWithRecep.optional = true
+	return mmGetPVZListWithRecep
 }
 
-// Expect sets up expected params for GetPVZ.GetPVZList
-func (mmGetPVZList *mGetPVZMockGetPVZList) Expect(startDate time.Time, endDate time.Time, page int, limit int) *mGetPVZMockGetPVZList {
-	if mmGetPVZList.mock.funcGetPVZList != nil {
-		mmGetPVZList.mock.t.Fatalf("GetPVZMock.GetPVZList mock is already set by Set")
+// Expect sets up expected params for GetPVZ.GetPVZListWithRecep
+func (mmGetPVZListWithRecep *mGetPVZMockGetPVZListWithRecep) Expect(startDate time.Time, endDate time.Time, page int, limit int) *mGetPVZMockGetPVZListWithRecep {
+	if mmGetPVZListWithRecep.mock.funcGetPVZListWithRecep != nil {
+		mmGetPVZListWithRecep.mock.t.Fatalf("GetPVZMock.GetPVZListWithRecep mock is already set by Set")
 	}
 
-	if mmGetPVZList.defaultExpectation == nil {
-		mmGetPVZList.defaultExpectation = &GetPVZMockGetPVZListExpectation{}
+	if mmGetPVZListWithRecep.defaultExpectation == nil {
+		mmGetPVZListWithRecep.defaultExpectation = &GetPVZMockGetPVZListWithRecepExpectation{}
 	}
 
-	if mmGetPVZList.defaultExpectation.paramPtrs != nil {
-		mmGetPVZList.mock.t.Fatalf("GetPVZMock.GetPVZList mock is already set by ExpectParams functions")
+	if mmGetPVZListWithRecep.defaultExpectation.paramPtrs != nil {
+		mmGetPVZListWithRecep.mock.t.Fatalf("GetPVZMock.GetPVZListWithRecep mock is already set by ExpectParams functions")
 	}
 
-	mmGetPVZList.defaultExpectation.params = &GetPVZMockGetPVZListParams{startDate, endDate, page, limit}
-	mmGetPVZList.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
-	for _, e := range mmGetPVZList.expectations {
-		if minimock.Equal(e.params, mmGetPVZList.defaultExpectation.params) {
-			mmGetPVZList.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmGetPVZList.defaultExpectation.params)
+	mmGetPVZListWithRecep.defaultExpectation.params = &GetPVZMockGetPVZListWithRecepParams{startDate, endDate, page, limit}
+	mmGetPVZListWithRecep.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
+	for _, e := range mmGetPVZListWithRecep.expectations {
+		if minimock.Equal(e.params, mmGetPVZListWithRecep.defaultExpectation.params) {
+			mmGetPVZListWithRecep.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmGetPVZListWithRecep.defaultExpectation.params)
 		}
 	}
 
-	return mmGetPVZList
+	return mmGetPVZListWithRecep
 }
 
-// ExpectStartDateParam1 sets up expected param startDate for GetPVZ.GetPVZList
-func (mmGetPVZList *mGetPVZMockGetPVZList) ExpectStartDateParam1(startDate time.Time) *mGetPVZMockGetPVZList {
-	if mmGetPVZList.mock.funcGetPVZList != nil {
-		mmGetPVZList.mock.t.Fatalf("GetPVZMock.GetPVZList mock is already set by Set")
+// ExpectStartDateParam1 sets up expected param startDate for GetPVZ.GetPVZListWithRecep
+func (mmGetPVZListWithRecep *mGetPVZMockGetPVZListWithRecep) ExpectStartDateParam1(startDate time.Time) *mGetPVZMockGetPVZListWithRecep {
+	if mmGetPVZListWithRecep.mock.funcGetPVZListWithRecep != nil {
+		mmGetPVZListWithRecep.mock.t.Fatalf("GetPVZMock.GetPVZListWithRecep mock is already set by Set")
 	}
 
-	if mmGetPVZList.defaultExpectation == nil {
-		mmGetPVZList.defaultExpectation = &GetPVZMockGetPVZListExpectation{}
+	if mmGetPVZListWithRecep.defaultExpectation == nil {
+		mmGetPVZListWithRecep.defaultExpectation = &GetPVZMockGetPVZListWithRecepExpectation{}
 	}
 
-	if mmGetPVZList.defaultExpectation.params != nil {
-		mmGetPVZList.mock.t.Fatalf("GetPVZMock.GetPVZList mock is already set by Expect")
+	if mmGetPVZListWithRecep.defaultExpectation.params != nil {
+		mmGetPVZListWithRecep.mock.t.Fatalf("GetPVZMock.GetPVZListWithRecep mock is already set by Expect")
 	}
 
-	if mmGetPVZList.defaultExpectation.paramPtrs == nil {
-		mmGetPVZList.defaultExpectation.paramPtrs = &GetPVZMockGetPVZListParamPtrs{}
+	if mmGetPVZListWithRecep.defaultExpectation.paramPtrs == nil {
+		mmGetPVZListWithRecep.defaultExpectation.paramPtrs = &GetPVZMockGetPVZListWithRecepParamPtrs{}
 	}
-	mmGetPVZList.defaultExpectation.paramPtrs.startDate = &startDate
-	mmGetPVZList.defaultExpectation.expectationOrigins.originStartDate = minimock.CallerInfo(1)
+	mmGetPVZListWithRecep.defaultExpectation.paramPtrs.startDate = &startDate
+	mmGetPVZListWithRecep.defaultExpectation.expectationOrigins.originStartDate = minimock.CallerInfo(1)
 
-	return mmGetPVZList
+	return mmGetPVZListWithRecep
 }
 
-// ExpectEndDateParam2 sets up expected param endDate for GetPVZ.GetPVZList
-func (mmGetPVZList *mGetPVZMockGetPVZList) ExpectEndDateParam2(endDate time.Time) *mGetPVZMockGetPVZList {
-	if mmGetPVZList.mock.funcGetPVZList != nil {
-		mmGetPVZList.mock.t.Fatalf("GetPVZMock.GetPVZList mock is already set by Set")
+// ExpectEndDateParam2 sets up expected param endDate for GetPVZ.GetPVZListWithRecep
+func (mmGetPVZListWithRecep *mGetPVZMockGetPVZListWithRecep) ExpectEndDateParam2(endDate time.Time) *mGetPVZMockGetPVZListWithRecep {
+	if mmGetPVZListWithRecep.mock.funcGetPVZListWithRecep != nil {
+		mmGetPVZListWithRecep.mock.t.Fatalf("GetPVZMock.GetPVZListWithRecep mock is already set by Set")
 	}
 
-	if mmGetPVZList.defaultExpectation == nil {
-		mmGetPVZList.defaultExpectation = &GetPVZMockGetPVZListExpectation{}
+	if mmGetPVZListWithRecep.defaultExpectation == nil {
+		mmGetPVZListWithRecep.defaultExpectation = &GetPVZMockGetPVZListWithRecepExpectation{}
 	}
 
-	if mmGetPVZList.defaultExpectation.params != nil {
-		mmGetPVZList.mock.t.Fatalf("GetPVZMock.GetPVZList mock is already set by Expect")
+	if mmGetPVZListWithRecep.defaultExpectation.params != nil {
+		mmGetPVZListWithRecep.mock.t.Fatalf("GetPVZMock.GetPVZListWithRecep mock is already set by Expect")
 	}
 
-	if mmGetPVZList.defaultExpectation.paramPtrs == nil {
-		mmGetPVZList.defaultExpectation.paramPtrs = &GetPVZMockGetPVZListParamPtrs{}
+	if mmGetPVZListWithRecep.defaultExpectation.paramPtrs == nil {
+		mmGetPVZListWithRecep.defaultExpectation.paramPtrs = &GetPVZMockGetPVZListWithRecepParamPtrs{}
 	}
-	mmGetPVZList.defaultExpectation.paramPtrs.endDate = &endDate
-	mmGetPVZList.defaultExpectation.expectationOrigins.originEndDate = minimock.CallerInfo(1)
+	mmGetPVZListWithRecep.defaultExpectation.paramPtrs.endDate = &endDate
+	mmGetPVZListWithRecep.defaultExpectation.expectationOrigins.originEndDate = minimock.CallerInfo(1)
 
-	return mmGetPVZList
+	return mmGetPVZListWithRecep
 }
 
-// ExpectPageParam3 sets up expected param page for GetPVZ.GetPVZList
-func (mmGetPVZList *mGetPVZMockGetPVZList) ExpectPageParam3(page int) *mGetPVZMockGetPVZList {
-	if mmGetPVZList.mock.funcGetPVZList != nil {
-		mmGetPVZList.mock.t.Fatalf("GetPVZMock.GetPVZList mock is already set by Set")
+// ExpectPageParam3 sets up expected param page for GetPVZ.GetPVZListWithRecep
+func (mmGetPVZListWithRecep *mGetPVZMockGetPVZListWithRecep) ExpectPageParam3(page int) *mGetPVZMockGetPVZListWithRecep {
+	if mmGetPVZListWithRecep.mock.funcGetPVZListWithRecep != nil {
+		mmGetPVZListWithRecep.mock.t.Fatalf("GetPVZMock.GetPVZListWithRecep mock is already set by Set")
 	}
 
-	if mmGetPVZList.defaultExpectation == nil {
-		mmGetPVZList.defaultExpectation = &GetPVZMockGetPVZListExpectation{}
+	if mmGetPVZListWithRecep.defaultExpectation == nil {
+		mmGetPVZListWithRecep.defaultExpectation = &GetPVZMockGetPVZListWithRecepExpectation{}
 	}
 
-	if mmGetPVZList.defaultExpectation.params != nil {
-		mmGetPVZList.mock.t.Fatalf("GetPVZMock.GetPVZList mock is already set by Expect")
+	if mmGetPVZListWithRecep.defaultExpectation.params != nil {
+		mmGetPVZListWithRecep.mock.t.Fatalf("GetPVZMock.GetPVZListWithRecep mock is already set by Expect")
 	}
 
-	if mmGetPVZList.defaultExpectation.paramPtrs == nil {
-		mmGetPVZList.defaultExpectation.paramPtrs = &GetPVZMockGetPVZListParamPtrs{}
+	if mmGetPVZListWithRecep.defaultExpectation.paramPtrs == nil {
+		mmGetPVZListWithRecep.defaultExpectation.paramPtrs = &GetPVZMockGetPVZListWithRecepParamPtrs{}
 	}
-	mmGetPVZList.defaultExpectation.paramPtrs.page = &page
-	mmGetPVZList.defaultExpectation.expectationOrigins.originPage = minimock.CallerInfo(1)
+	mmGetPVZListWithRecep.defaultExpectation.paramPtrs.page = &page
+	mmGetPVZListWithRecep.defaultExpectation.expectationOrigins.originPage = minimock.CallerInfo(1)
 
-	return mmGetPVZList
+	return mmGetPVZListWithRecep
 }
 
-// ExpectLimitParam4 sets up expected param limit for GetPVZ.GetPVZList
-func (mmGetPVZList *mGetPVZMockGetPVZList) ExpectLimitParam4(limit int) *mGetPVZMockGetPVZList {
-	if mmGetPVZList.mock.funcGetPVZList != nil {
-		mmGetPVZList.mock.t.Fatalf("GetPVZMock.GetPVZList mock is already set by Set")
+// ExpectLimitParam4 sets up expected param limit for GetPVZ.GetPVZListWithRecep
+func (mmGetPVZListWithRecep *mGetPVZMockGetPVZListWithRecep) ExpectLimitParam4(limit int) *mGetPVZMockGetPVZListWithRecep {
+	if mmGetPVZListWithRecep.mock.funcGetPVZListWithRecep != nil {
+		mmGetPVZListWithRecep.mock.t.Fatalf("GetPVZMock.GetPVZListWithRecep mock is already set by Set")
 	}
 
-	if mmGetPVZList.defaultExpectation == nil {
-		mmGetPVZList.defaultExpectation = &GetPVZMockGetPVZListExpectation{}
+	if mmGetPVZListWithRecep.defaultExpectation == nil {
+		mmGetPVZListWithRecep.defaultExpectation = &GetPVZMockGetPVZListWithRecepExpectation{}
 	}
 
-	if mmGetPVZList.defaultExpectation.params != nil {
-		mmGetPVZList.mock.t.Fatalf("GetPVZMock.GetPVZList mock is already set by Expect")
+	if mmGetPVZListWithRecep.defaultExpectation.params != nil {
+		mmGetPVZListWithRecep.mock.t.Fatalf("GetPVZMock.GetPVZListWithRecep mock is already set by Expect")
 	}
 
-	if mmGetPVZList.defaultExpectation.paramPtrs == nil {
-		mmGetPVZList.defaultExpectation.paramPtrs = &GetPVZMockGetPVZListParamPtrs{}
+	if mmGetPVZListWithRecep.defaultExpectation.paramPtrs == nil {
+		mmGetPVZListWithRecep.defaultExpectation.paramPtrs = &GetPVZMockGetPVZListWithRecepParamPtrs{}
 	}
-	mmGetPVZList.defaultExpectation.paramPtrs.limit = &limit
-	mmGetPVZList.defaultExpectation.expectationOrigins.originLimit = minimock.CallerInfo(1)
+	mmGetPVZListWithRecep.defaultExpectation.paramPtrs.limit = &limit
+	mmGetPVZListWithRecep.defaultExpectation.expectationOrigins.originLimit = minimock.CallerInfo(1)
 
-	return mmGetPVZList
+	return mmGetPVZListWithRecep
 }
 
-// Inspect accepts an inspector function that has same arguments as the GetPVZ.GetPVZList
-func (mmGetPVZList *mGetPVZMockGetPVZList) Inspect(f func(startDate time.Time, endDate time.Time, page int, limit int)) *mGetPVZMockGetPVZList {
-	if mmGetPVZList.mock.inspectFuncGetPVZList != nil {
-		mmGetPVZList.mock.t.Fatalf("Inspect function is already set for GetPVZMock.GetPVZList")
+// Inspect accepts an inspector function that has same arguments as the GetPVZ.GetPVZListWithRecep
+func (mmGetPVZListWithRecep *mGetPVZMockGetPVZListWithRecep) Inspect(f func(startDate time.Time, endDate time.Time, page int, limit int)) *mGetPVZMockGetPVZListWithRecep {
+	if mmGetPVZListWithRecep.mock.inspectFuncGetPVZListWithRecep != nil {
+		mmGetPVZListWithRecep.mock.t.Fatalf("Inspect function is already set for GetPVZMock.GetPVZListWithRecep")
 	}
 
-	mmGetPVZList.mock.inspectFuncGetPVZList = f
+	mmGetPVZListWithRecep.mock.inspectFuncGetPVZListWithRecep = f
 
-	return mmGetPVZList
+	return mmGetPVZListWithRecep
 }
 
-// Return sets up results that will be returned by GetPVZ.GetPVZList
-func (mmGetPVZList *mGetPVZMockGetPVZList) Return(ppa1 []*model.PVZWithRecep, err error) *GetPVZMock {
-	if mmGetPVZList.mock.funcGetPVZList != nil {
-		mmGetPVZList.mock.t.Fatalf("GetPVZMock.GetPVZList mock is already set by Set")
+// Return sets up results that will be returned by GetPVZ.GetPVZListWithRecep
+func (mmGetPVZListWithRecep *mGetPVZMockGetPVZListWithRecep) Return(ppa1 []*model.PVZWithRecep, err error) *GetPVZMock {
+	if mmGetPVZListWithRecep.mock.funcGetPVZListWithRecep != nil {
+		mmGetPVZListWithRecep.mock.t.Fatalf("GetPVZMock.GetPVZListWithRecep mock is already set by Set")
 	}
 
-	if mmGetPVZList.defaultExpectation == nil {
-		mmGetPVZList.defaultExpectation = &GetPVZMockGetPVZListExpectation{mock: mmGetPVZList.mock}
+	if mmGetPVZListWithRecep.defaultExpectation == nil {
+		mmGetPVZListWithRecep.defaultExpectation = &GetPVZMockGetPVZListWithRecepExpectation{mock: mmGetPVZListWithRecep.mock}
 	}
-	mmGetPVZList.defaultExpectation.results = &GetPVZMockGetPVZListResults{ppa1, err}
-	mmGetPVZList.defaultExpectation.returnOrigin = minimock.CallerInfo(1)
-	return mmGetPVZList.mock
+	mmGetPVZListWithRecep.defaultExpectation.results = &GetPVZMockGetPVZListWithRecepResults{ppa1, err}
+	mmGetPVZListWithRecep.defaultExpectation.returnOrigin = minimock.CallerInfo(1)
+	return mmGetPVZListWithRecep.mock
 }
 
-// Set uses given function f to mock the GetPVZ.GetPVZList method
-func (mmGetPVZList *mGetPVZMockGetPVZList) Set(f func(startDate time.Time, endDate time.Time, page int, limit int) (ppa1 []*model.PVZWithRecep, err error)) *GetPVZMock {
-	if mmGetPVZList.defaultExpectation != nil {
-		mmGetPVZList.mock.t.Fatalf("Default expectation is already set for the GetPVZ.GetPVZList method")
+// Set uses given function f to mock the GetPVZ.GetPVZListWithRecep method
+func (mmGetPVZListWithRecep *mGetPVZMockGetPVZListWithRecep) Set(f func(startDate time.Time, endDate time.Time, page int, limit int) (ppa1 []*model.PVZWithRecep, err error)) *GetPVZMock {
+	if mmGetPVZListWithRecep.defaultExpectation != nil {
+		mmGetPVZListWithRecep.mock.t.Fatalf("Default expectation is already set for the GetPVZ.GetPVZListWithRecep method")
 	}
 
-	if len(mmGetPVZList.expectations) > 0 {
-		mmGetPVZList.mock.t.Fatalf("Some expectations are already set for the GetPVZ.GetPVZList method")
+	if len(mmGetPVZListWithRecep.expectations) > 0 {
+		mmGetPVZListWithRecep.mock.t.Fatalf("Some expectations are already set for the GetPVZ.GetPVZListWithRecep method")
 	}
 
-	mmGetPVZList.mock.funcGetPVZList = f
-	mmGetPVZList.mock.funcGetPVZListOrigin = minimock.CallerInfo(1)
-	return mmGetPVZList.mock
+	mmGetPVZListWithRecep.mock.funcGetPVZListWithRecep = f
+	mmGetPVZListWithRecep.mock.funcGetPVZListWithRecepOrigin = minimock.CallerInfo(1)
+	return mmGetPVZListWithRecep.mock
 }
 
-// When sets expectation for the GetPVZ.GetPVZList which will trigger the result defined by the following
+// When sets expectation for the GetPVZ.GetPVZListWithRecep which will trigger the result defined by the following
 // Then helper
-func (mmGetPVZList *mGetPVZMockGetPVZList) When(startDate time.Time, endDate time.Time, page int, limit int) *GetPVZMockGetPVZListExpectation {
-	if mmGetPVZList.mock.funcGetPVZList != nil {
-		mmGetPVZList.mock.t.Fatalf("GetPVZMock.GetPVZList mock is already set by Set")
+func (mmGetPVZListWithRecep *mGetPVZMockGetPVZListWithRecep) When(startDate time.Time, endDate time.Time, page int, limit int) *GetPVZMockGetPVZListWithRecepExpectation {
+	if mmGetPVZListWithRecep.mock.funcGetPVZListWithRecep != nil {
+		mmGetPVZListWithRecep.mock.t.Fatalf("GetPVZMock.GetPVZListWithRecep mock is already set by Set")
 	}
 
-	expectation := &GetPVZMockGetPVZListExpectation{
-		mock:               mmGetPVZList.mock,
-		params:             &GetPVZMockGetPVZListParams{startDate, endDate, page, limit},
-		expectationOrigins: GetPVZMockGetPVZListExpectationOrigins{origin: minimock.CallerInfo(1)},
+	expectation := &GetPVZMockGetPVZListWithRecepExpectation{
+		mock:               mmGetPVZListWithRecep.mock,
+		params:             &GetPVZMockGetPVZListWithRecepParams{startDate, endDate, page, limit},
+		expectationOrigins: GetPVZMockGetPVZListWithRecepExpectationOrigins{origin: minimock.CallerInfo(1)},
 	}
-	mmGetPVZList.expectations = append(mmGetPVZList.expectations, expectation)
+	mmGetPVZListWithRecep.expectations = append(mmGetPVZListWithRecep.expectations, expectation)
 	return expectation
 }
 
-// Then sets up GetPVZ.GetPVZList return parameters for the expectation previously defined by the When method
-func (e *GetPVZMockGetPVZListExpectation) Then(ppa1 []*model.PVZWithRecep, err error) *GetPVZMock {
-	e.results = &GetPVZMockGetPVZListResults{ppa1, err}
+// Then sets up GetPVZ.GetPVZListWithRecep return parameters for the expectation previously defined by the When method
+func (e *GetPVZMockGetPVZListWithRecepExpectation) Then(ppa1 []*model.PVZWithRecep, err error) *GetPVZMock {
+	e.results = &GetPVZMockGetPVZListWithRecepResults{ppa1, err}
 	return e.mock
 }
 
-// Times sets number of times GetPVZ.GetPVZList should be invoked
-func (mmGetPVZList *mGetPVZMockGetPVZList) Times(n uint64) *mGetPVZMockGetPVZList {
+// Times sets number of times GetPVZ.GetPVZListWithRecep should be invoked
+func (mmGetPVZListWithRecep *mGetPVZMockGetPVZListWithRecep) Times(n uint64) *mGetPVZMockGetPVZListWithRecep {
 	if n == 0 {
-		mmGetPVZList.mock.t.Fatalf("Times of GetPVZMock.GetPVZList mock can not be zero")
+		mmGetPVZListWithRecep.mock.t.Fatalf("Times of GetPVZMock.GetPVZListWithRecep mock can not be zero")
 	}
-	mm_atomic.StoreUint64(&mmGetPVZList.expectedInvocations, n)
-	mmGetPVZList.expectedInvocationsOrigin = minimock.CallerInfo(1)
-	return mmGetPVZList
+	mm_atomic.StoreUint64(&mmGetPVZListWithRecep.expectedInvocations, n)
+	mmGetPVZListWithRecep.expectedInvocationsOrigin = minimock.CallerInfo(1)
+	return mmGetPVZListWithRecep
 }
 
-func (mmGetPVZList *mGetPVZMockGetPVZList) invocationsDone() bool {
-	if len(mmGetPVZList.expectations) == 0 && mmGetPVZList.defaultExpectation == nil && mmGetPVZList.mock.funcGetPVZList == nil {
+func (mmGetPVZListWithRecep *mGetPVZMockGetPVZListWithRecep) invocationsDone() bool {
+	if len(mmGetPVZListWithRecep.expectations) == 0 && mmGetPVZListWithRecep.defaultExpectation == nil && mmGetPVZListWithRecep.mock.funcGetPVZListWithRecep == nil {
 		return true
 	}
 
-	totalInvocations := mm_atomic.LoadUint64(&mmGetPVZList.mock.afterGetPVZListCounter)
-	expectedInvocations := mm_atomic.LoadUint64(&mmGetPVZList.expectedInvocations)
+	totalInvocations := mm_atomic.LoadUint64(&mmGetPVZListWithRecep.mock.afterGetPVZListWithRecepCounter)
+	expectedInvocations := mm_atomic.LoadUint64(&mmGetPVZListWithRecep.expectedInvocations)
 
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// GetPVZList implements GetPVZ
-func (mmGetPVZList *GetPVZMock) GetPVZList(startDate time.Time, endDate time.Time, page int, limit int) (ppa1 []*model.PVZWithRecep, err error) {
-	mm_atomic.AddUint64(&mmGetPVZList.beforeGetPVZListCounter, 1)
-	defer mm_atomic.AddUint64(&mmGetPVZList.afterGetPVZListCounter, 1)
+// GetPVZListWithRecep implements GetPVZ
+func (mmGetPVZListWithRecep *GetPVZMock) GetPVZListWithRecep(startDate time.Time, endDate time.Time, page int, limit int) (ppa1 []*model.PVZWithRecep, err error) {
+	mm_atomic.AddUint64(&mmGetPVZListWithRecep.beforeGetPVZListWithRecepCounter, 1)
+	defer mm_atomic.AddUint64(&mmGetPVZListWithRecep.afterGetPVZListWithRecepCounter, 1)
 
-	mmGetPVZList.t.Helper()
+	mmGetPVZListWithRecep.t.Helper()
 
-	if mmGetPVZList.inspectFuncGetPVZList != nil {
-		mmGetPVZList.inspectFuncGetPVZList(startDate, endDate, page, limit)
+	if mmGetPVZListWithRecep.inspectFuncGetPVZListWithRecep != nil {
+		mmGetPVZListWithRecep.inspectFuncGetPVZListWithRecep(startDate, endDate, page, limit)
 	}
 
-	mm_params := GetPVZMockGetPVZListParams{startDate, endDate, page, limit}
+	mm_params := GetPVZMockGetPVZListWithRecepParams{startDate, endDate, page, limit}
 
 	// Record call args
-	mmGetPVZList.GetPVZListMock.mutex.Lock()
-	mmGetPVZList.GetPVZListMock.callArgs = append(mmGetPVZList.GetPVZListMock.callArgs, &mm_params)
-	mmGetPVZList.GetPVZListMock.mutex.Unlock()
+	mmGetPVZListWithRecep.GetPVZListWithRecepMock.mutex.Lock()
+	mmGetPVZListWithRecep.GetPVZListWithRecepMock.callArgs = append(mmGetPVZListWithRecep.GetPVZListWithRecepMock.callArgs, &mm_params)
+	mmGetPVZListWithRecep.GetPVZListWithRecepMock.mutex.Unlock()
 
-	for _, e := range mmGetPVZList.GetPVZListMock.expectations {
+	for _, e := range mmGetPVZListWithRecep.GetPVZListWithRecepMock.expectations {
 		if minimock.Equal(*e.params, mm_params) {
 			mm_atomic.AddUint64(&e.Counter, 1)
 			return e.results.ppa1, e.results.err
 		}
 	}
 
-	if mmGetPVZList.GetPVZListMock.defaultExpectation != nil {
-		mm_atomic.AddUint64(&mmGetPVZList.GetPVZListMock.defaultExpectation.Counter, 1)
-		mm_want := mmGetPVZList.GetPVZListMock.defaultExpectation.params
-		mm_want_ptrs := mmGetPVZList.GetPVZListMock.defaultExpectation.paramPtrs
+	if mmGetPVZListWithRecep.GetPVZListWithRecepMock.defaultExpectation != nil {
+		mm_atomic.AddUint64(&mmGetPVZListWithRecep.GetPVZListWithRecepMock.defaultExpectation.Counter, 1)
+		mm_want := mmGetPVZListWithRecep.GetPVZListWithRecepMock.defaultExpectation.params
+		mm_want_ptrs := mmGetPVZListWithRecep.GetPVZListWithRecepMock.defaultExpectation.paramPtrs
 
-		mm_got := GetPVZMockGetPVZListParams{startDate, endDate, page, limit}
+		mm_got := GetPVZMockGetPVZListWithRecepParams{startDate, endDate, page, limit}
 
 		if mm_want_ptrs != nil {
 
 			if mm_want_ptrs.startDate != nil && !minimock.Equal(*mm_want_ptrs.startDate, mm_got.startDate) {
-				mmGetPVZList.t.Errorf("GetPVZMock.GetPVZList got unexpected parameter startDate, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
-					mmGetPVZList.GetPVZListMock.defaultExpectation.expectationOrigins.originStartDate, *mm_want_ptrs.startDate, mm_got.startDate, minimock.Diff(*mm_want_ptrs.startDate, mm_got.startDate))
+				mmGetPVZListWithRecep.t.Errorf("GetPVZMock.GetPVZListWithRecep got unexpected parameter startDate, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmGetPVZListWithRecep.GetPVZListWithRecepMock.defaultExpectation.expectationOrigins.originStartDate, *mm_want_ptrs.startDate, mm_got.startDate, minimock.Diff(*mm_want_ptrs.startDate, mm_got.startDate))
 			}
 
 			if mm_want_ptrs.endDate != nil && !minimock.Equal(*mm_want_ptrs.endDate, mm_got.endDate) {
-				mmGetPVZList.t.Errorf("GetPVZMock.GetPVZList got unexpected parameter endDate, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
-					mmGetPVZList.GetPVZListMock.defaultExpectation.expectationOrigins.originEndDate, *mm_want_ptrs.endDate, mm_got.endDate, minimock.Diff(*mm_want_ptrs.endDate, mm_got.endDate))
+				mmGetPVZListWithRecep.t.Errorf("GetPVZMock.GetPVZListWithRecep got unexpected parameter endDate, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmGetPVZListWithRecep.GetPVZListWithRecepMock.defaultExpectation.expectationOrigins.originEndDate, *mm_want_ptrs.endDate, mm_got.endDate, minimock.Diff(*mm_want_ptrs.endDate, mm_got.endDate))
 			}
 
 			if mm_want_ptrs.page != nil && !minimock.Equal(*mm_want_ptrs.page, mm_got.page) {
-				mmGetPVZList.t.Errorf("GetPVZMock.GetPVZList got unexpected parameter page, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
-					mmGetPVZList.GetPVZListMock.defaultExpectation.expectationOrigins.originPage, *mm_want_ptrs.page, mm_got.page, minimock.Diff(*mm_want_ptrs.page, mm_got.page))
+				mmGetPVZListWithRecep.t.Errorf("GetPVZMock.GetPVZListWithRecep got unexpected parameter page, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmGetPVZListWithRecep.GetPVZListWithRecepMock.defaultExpectation.expectationOrigins.originPage, *mm_want_ptrs.page, mm_got.page, minimock.Diff(*mm_want_ptrs.page, mm_got.page))
 			}
 
 			if mm_want_ptrs.limit != nil && !minimock.Equal(*mm_want_ptrs.limit, mm_got.limit) {
-				mmGetPVZList.t.Errorf("GetPVZMock.GetPVZList got unexpected parameter limit, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
-					mmGetPVZList.GetPVZListMock.defaultExpectation.expectationOrigins.originLimit, *mm_want_ptrs.limit, mm_got.limit, minimock.Diff(*mm_want_ptrs.limit, mm_got.limit))
+				mmGetPVZListWithRecep.t.Errorf("GetPVZMock.GetPVZListWithRecep got unexpected parameter limit, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmGetPVZListWithRecep.GetPVZListWithRecepMock.defaultExpectation.expectationOrigins.originLimit, *mm_want_ptrs.limit, mm_got.limit, minimock.Diff(*mm_want_ptrs.limit, mm_got.limit))
 			}
 
 		} else if mm_want != nil && !minimock.Equal(*mm_want, mm_got) {
-			mmGetPVZList.t.Errorf("GetPVZMock.GetPVZList got unexpected parameters, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
-				mmGetPVZList.GetPVZListMock.defaultExpectation.expectationOrigins.origin, *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
+			mmGetPVZListWithRecep.t.Errorf("GetPVZMock.GetPVZListWithRecep got unexpected parameters, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+				mmGetPVZListWithRecep.GetPVZListWithRecepMock.defaultExpectation.expectationOrigins.origin, *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
 		}
 
-		mm_results := mmGetPVZList.GetPVZListMock.defaultExpectation.results
+		mm_results := mmGetPVZListWithRecep.GetPVZListWithRecepMock.defaultExpectation.results
 		if mm_results == nil {
-			mmGetPVZList.t.Fatal("No results are set for the GetPVZMock.GetPVZList")
+			mmGetPVZListWithRecep.t.Fatal("No results are set for the GetPVZMock.GetPVZListWithRecep")
 		}
 		return (*mm_results).ppa1, (*mm_results).err
 	}
-	if mmGetPVZList.funcGetPVZList != nil {
-		return mmGetPVZList.funcGetPVZList(startDate, endDate, page, limit)
+	if mmGetPVZListWithRecep.funcGetPVZListWithRecep != nil {
+		return mmGetPVZListWithRecep.funcGetPVZListWithRecep(startDate, endDate, page, limit)
 	}
-	mmGetPVZList.t.Fatalf("Unexpected call to GetPVZMock.GetPVZList. %v %v %v %v", startDate, endDate, page, limit)
+	mmGetPVZListWithRecep.t.Fatalf("Unexpected call to GetPVZMock.GetPVZListWithRecep. %v %v %v %v", startDate, endDate, page, limit)
 	return
 }
 
-// GetPVZListAfterCounter returns a count of finished GetPVZMock.GetPVZList invocations
-func (mmGetPVZList *GetPVZMock) GetPVZListAfterCounter() uint64 {
-	return mm_atomic.LoadUint64(&mmGetPVZList.afterGetPVZListCounter)
+// GetPVZListWithRecepAfterCounter returns a count of finished GetPVZMock.GetPVZListWithRecep invocations
+func (mmGetPVZListWithRecep *GetPVZMock) GetPVZListWithRecepAfterCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmGetPVZListWithRecep.afterGetPVZListWithRecepCounter)
 }
 
-// GetPVZListBeforeCounter returns a count of GetPVZMock.GetPVZList invocations
-func (mmGetPVZList *GetPVZMock) GetPVZListBeforeCounter() uint64 {
-	return mm_atomic.LoadUint64(&mmGetPVZList.beforeGetPVZListCounter)
+// GetPVZListWithRecepBeforeCounter returns a count of GetPVZMock.GetPVZListWithRecep invocations
+func (mmGetPVZListWithRecep *GetPVZMock) GetPVZListWithRecepBeforeCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmGetPVZListWithRecep.beforeGetPVZListWithRecepCounter)
 }
 
-// Calls returns a list of arguments used in each call to GetPVZMock.GetPVZList.
+// Calls returns a list of arguments used in each call to GetPVZMock.GetPVZListWithRecep.
 // The list is in the same order as the calls were made (i.e. recent calls have a higher index)
-func (mmGetPVZList *mGetPVZMockGetPVZList) Calls() []*GetPVZMockGetPVZListParams {
-	mmGetPVZList.mutex.RLock()
+func (mmGetPVZListWithRecep *mGetPVZMockGetPVZListWithRecep) Calls() []*GetPVZMockGetPVZListWithRecepParams {
+	mmGetPVZListWithRecep.mutex.RLock()
 
-	argCopy := make([]*GetPVZMockGetPVZListParams, len(mmGetPVZList.callArgs))
-	copy(argCopy, mmGetPVZList.callArgs)
+	argCopy := make([]*GetPVZMockGetPVZListWithRecepParams, len(mmGetPVZListWithRecep.callArgs))
+	copy(argCopy, mmGetPVZListWithRecep.callArgs)
 
-	mmGetPVZList.mutex.RUnlock()
+	mmGetPVZListWithRecep.mutex.RUnlock()
 
 	return argCopy
 }
 
-// MinimockGetPVZListDone returns true if the count of the GetPVZList invocations corresponds
+// MinimockGetPVZListWithRecepDone returns true if the count of the GetPVZListWithRecep invocations corresponds
 // the number of defined expectations
-func (m *GetPVZMock) MinimockGetPVZListDone() bool {
-	if m.GetPVZListMock.optional {
+func (m *GetPVZMock) MinimockGetPVZListWithRecepDone() bool {
+	if m.GetPVZListWithRecepMock.optional {
 		// Optional methods provide '0 or more' call count restriction.
 		return true
 	}
 
-	for _, e := range m.GetPVZListMock.expectations {
+	for _, e := range m.GetPVZListWithRecepMock.expectations {
 		if mm_atomic.LoadUint64(&e.Counter) < 1 {
 			return false
 		}
 	}
 
-	return m.GetPVZListMock.invocationsDone()
+	return m.GetPVZListWithRecepMock.invocationsDone()
 }
 
-// MinimockGetPVZListInspect logs each unmet expectation
-func (m *GetPVZMock) MinimockGetPVZListInspect() {
-	for _, e := range m.GetPVZListMock.expectations {
+// MinimockGetPVZListWithRecepInspect logs each unmet expectation
+func (m *GetPVZMock) MinimockGetPVZListWithRecepInspect() {
+	for _, e := range m.GetPVZListWithRecepMock.expectations {
 		if mm_atomic.LoadUint64(&e.Counter) < 1 {
-			m.t.Errorf("Expected call to GetPVZMock.GetPVZList at\n%s with params: %#v", e.expectationOrigins.origin, *e.params)
+			m.t.Errorf("Expected call to GetPVZMock.GetPVZListWithRecep at\n%s with params: %#v", e.expectationOrigins.origin, *e.params)
 		}
 	}
 
-	afterGetPVZListCounter := mm_atomic.LoadUint64(&m.afterGetPVZListCounter)
+	afterGetPVZListWithRecepCounter := mm_atomic.LoadUint64(&m.afterGetPVZListWithRecepCounter)
 	// if default expectation was set then invocations count should be greater than zero
-	if m.GetPVZListMock.defaultExpectation != nil && afterGetPVZListCounter < 1 {
-		if m.GetPVZListMock.defaultExpectation.params == nil {
-			m.t.Errorf("Expected call to GetPVZMock.GetPVZList at\n%s", m.GetPVZListMock.defaultExpectation.returnOrigin)
+	if m.GetPVZListWithRecepMock.defaultExpectation != nil && afterGetPVZListWithRecepCounter < 1 {
+		if m.GetPVZListWithRecepMock.defaultExpectation.params == nil {
+			m.t.Errorf("Expected call to GetPVZMock.GetPVZListWithRecep at\n%s", m.GetPVZListWithRecepMock.defaultExpectation.returnOrigin)
 		} else {
-			m.t.Errorf("Expected call to GetPVZMock.GetPVZList at\n%s with params: %#v", m.GetPVZListMock.defaultExpectation.expectationOrigins.origin, *m.GetPVZListMock.defaultExpectation.params)
+			m.t.Errorf("Expected call to GetPVZMock.GetPVZListWithRecep at\n%s with params: %#v", m.GetPVZListWithRecepMock.defaultExpectation.expectationOrigins.origin, *m.GetPVZListWithRecepMock.defaultExpectation.params)
 		}
 	}
 	// if func was set then invocations count should be greater than zero
-	if m.funcGetPVZList != nil && afterGetPVZListCounter < 1 {
-		m.t.Errorf("Expected call to GetPVZMock.GetPVZList at\n%s", m.funcGetPVZListOrigin)
+	if m.funcGetPVZListWithRecep != nil && afterGetPVZListWithRecepCounter < 1 {
+		m.t.Errorf("Expected call to GetPVZMock.GetPVZListWithRecep at\n%s", m.funcGetPVZListWithRecepOrigin)
 	}
 
-	if !m.GetPVZListMock.invocationsDone() && afterGetPVZListCounter > 0 {
-		m.t.Errorf("Expected %d calls to GetPVZMock.GetPVZList at\n%s but found %d calls",
-			mm_atomic.LoadUint64(&m.GetPVZListMock.expectedInvocations), m.GetPVZListMock.expectedInvocationsOrigin, afterGetPVZListCounter)
+	if !m.GetPVZListWithRecepMock.invocationsDone() && afterGetPVZListWithRecepCounter > 0 {
+		m.t.Errorf("Expected %d calls to GetPVZMock.GetPVZListWithRecep at\n%s but found %d calls",
+			mm_atomic.LoadUint64(&m.GetPVZListWithRecepMock.expectedInvocations), m.GetPVZListWithRecepMock.expectedInvocationsOrigin, afterGetPVZListWithRecepCounter)
 	}
 }
 
@@ -452,7 +452,7 @@ func (m *GetPVZMock) MinimockGetPVZListInspect() {
 func (m *GetPVZMock) MinimockFinish() {
 	m.finishOnce.Do(func() {
 		if !m.minimockDone() {
-			m.MinimockGetPVZListInspect()
+			m.MinimockGetPVZListWithRecepInspect()
 		}
 	})
 }
@@ -476,5 +476,5 @@ func (m *GetPVZMock) MinimockWait(timeout mm_time.Duration) {
 func (m *GetPVZMock) minimockDone() bool {
 	done := true
 	return done &&
-		m.MinimockGetPVZListDone()
+		m.MinimockGetPVZListWithRecepDone()
 }

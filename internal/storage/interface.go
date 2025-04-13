@@ -15,5 +15,6 @@ type StorageImp interface {
 	CloseLastReceptions(pvzID uuid.UUID) error
 	CreateUser(email string, password string, role string) (*model.RegisterResp, error)
 	Login(email string, password string) (uuid.UUID, string, error)
-	GetPVZList(startDate, endDate time.Time, page, limit int) ([]*model.PVZWithRecep, error)
+	GetPVZListWithRecep(startDate, endDate time.Time, page, limit int) ([]*model.PVZWithRecep, error)
+	GetPVZList() ([]*model.PVZResp, error)
 }

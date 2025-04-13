@@ -8,5 +8,5 @@ import (
 
 //go:generate minimock -i GetPVZ
 type GetPVZ interface {
-	GetPVZList(startDate, endDate time.Time, page, limit int) ([]*model.PVZWithRecep, error)
+	GetPVZListWithRecep(startDate, endDate time.Time, page, limit int) ([]*model.PVZWithRecep, error)
 }
