@@ -81,7 +81,7 @@ func (s *httpServer) Run() error {
 		idleTime = 60 * time.Second
 	}
 
-	addr := "localhost:" + os.Getenv("HTTP_SERVER_PORT")
+	addr := ":" + os.Getenv("HTTP_SERVER_PORT")
 
 	srv := &http.Server{
 		Addr:         addr,
