@@ -2,7 +2,6 @@ package getpvzlist
 
 import (
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
@@ -42,14 +41,9 @@ func (h *PVZ) GetPVZList(w http.ResponseWriter, r *http.Request) {
 	logger := log.With().Str("fn", op).Logger()
 	logger.Debug().Msg("Request for get pvz list has been received")
 
-	defaultPage := os.Getenv("DEFAULT_PAGE")
-	if defaultPage == "" {
-		defaultPage = "1"
-	}
-	defaultLimit := os.Getenv("DEFAULT_LIMIT")
-	if defaultLimit == "" {
-		defaultLimit = "10"
-	}
+	defaultPage := 1
+
+	defaultLimit := 10
 
 	var startDate = r.URL.Query().Get("startDate")
 	var endDate = r.URL.Query().Get("endDate")
@@ -85,7 +79,7 @@ func (h *PVZ) GetPVZList(w http.ResponseWriter, r *http.Request) {
 	var pageInt int
 	var limitInt int
 	if page == "" {
-		pageInt, err = strconv.Atoi(defaultPage)
+		pageInt = defaultPage
 	} else {
 		pageInt, err = strconv.Atoi(page)
 	}
@@ -99,7 +93,7 @@ func (h *PVZ) GetPVZList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if limit == "" {
-		limitInt, err = strconv.Atoi(defaultLimit)
+		limitInt = defaultLimit
 	} else {
 		limitInt, err = strconv.Atoi(limit)
 	}

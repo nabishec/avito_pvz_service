@@ -434,6 +434,12 @@ func (r *Storage) getPVZListByReceptionsDate(startDate, endDate time.Time, page,
 	}
 
 	if len(receptionsList) == 0 {
+		err = tx.Commit()
+		if err != nil {
+			err = fmt.Errorf("%s:%w", op, err)
+			return nil, err
+		}
+
 		return createPVZList(pvzList, receptionsList, productsList), nil
 	}
 
@@ -453,6 +459,12 @@ func (r *Storage) getPVZListByReceptionsDate(startDate, endDate time.Time, page,
 		return nil, fmt.Errorf("%s:%w", op, err)
 	}
 	if len(pvzList) == 0 {
+		err = tx.Commit()
+		if err != nil {
+			err = fmt.Errorf("%s:%w", op, err)
+			return nil, err
+		}
+
 		return createPVZList(pvzList, receptionsList, productsList), nil
 	}
 
@@ -470,6 +482,12 @@ func (r *Storage) getPVZListByReceptionsDate(startDate, endDate time.Time, page,
 	err = r.db.Select(&productsList, queryGetProductsList, pvzIDs, startDate, endDate)
 	if err != nil {
 		return nil, fmt.Errorf("%s:%w", op, err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		err = fmt.Errorf("%s:%w", op, err)
+		return nil, err
 	}
 
 	log.Debug().Msgf("%s end", op)
@@ -506,6 +524,11 @@ func (r *Storage) getPVZListByPVZ(page, limit int) ([]*model.PVZWithRecep, error
 		return nil, fmt.Errorf("%s:%w", op, err)
 	}
 	if len(pvzList) == 0 {
+		err = tx.Commit()
+		if err != nil {
+			err = fmt.Errorf("%s:%w", op, err)
+			return nil, err
+		}
 		return createPVZList(pvzList, receptionsList, productsList), nil
 	}
 
@@ -524,6 +547,11 @@ func (r *Storage) getPVZListByPVZ(page, limit int) ([]*model.PVZWithRecep, error
 		return nil, fmt.Errorf("%s:%w", op, err)
 	}
 	if len(receptionsList) == 0 {
+		err = tx.Commit()
+		if err != nil {
+			err = fmt.Errorf("%s:%w", op, err)
+			return nil, err
+		}
 		return createPVZList(pvzList, receptionsList, productsList), nil
 	}
 
@@ -545,6 +573,12 @@ func (r *Storage) getPVZListByPVZ(page, limit int) ([]*model.PVZWithRecep, error
 	err = tx.Select(&productsList, queryGetProductsList, limit, (page-1)*limit)
 	if err != nil {
 		return nil, fmt.Errorf("%s:%w", op, err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		err = fmt.Errorf("%s:%w", op, err)
+		return nil, err
 	}
 
 	log.Debug().Msgf("%s end", op)
@@ -649,6 +683,12 @@ func (r *Storage) GetValuesForMetrics() (pvzs int, receptions int, products int,
 	err = tx.QueryRow(queryGetProductsCount).Scan(&products)
 	if err != nil {
 		return 0, 0, 0, fmt.Errorf("%s:%w", op, err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		err = fmt.Errorf("%s:%w", op, err)
+		return 0, 0, 0, err
 	}
 
 	log.Debug().Msgf("%s end", op)
