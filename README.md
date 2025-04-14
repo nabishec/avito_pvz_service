@@ -68,12 +68,6 @@ go test ./integration_test/...
 А также юнит [тесты](internal/http_server/handlers) для бизнес логики.
 
 Для проверки покрытия кода тестами:
-
-```bash
-go test ./... -coverprofile cover.out.tmp   
-```
-
-Для проверки покрытия функций бизнес логики тестами
 ```bash
 go test ./internal/http_server/handlers/... -coverprofile cover.out 
 
