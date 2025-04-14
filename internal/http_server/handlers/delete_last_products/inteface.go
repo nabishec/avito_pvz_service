@@ -1,8 +1,12 @@
 package deletelastproducts
 
-import "github.com/google/uuid"
+import (
+	"context"
+
+	"github.com/google/uuid"
+)
 
 //go:generate minimock -i PostDeleteLastProducts
 type PostDeleteLastProducts interface {
-	DeleteLastProducts(pvzID uuid.UUID) error
+	DeleteLastProducts(ctx context.Context, pvzID uuid.UUID) error
 }

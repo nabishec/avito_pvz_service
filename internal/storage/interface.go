@@ -12,7 +12,7 @@ type StorageImp interface {
 	AddPVZ(city string) (*model.PVZResp, error)
 	AddReception(ctx context.Context, pvzID uuid.UUID) (*model.ReceptionsResp, error)
 	AddProduct(pvzID uuid.UUID, productType string) (*model.ProductsResp, error)
-	DeleteLastProducts(pvzID uuid.UUID) error
+	DeleteLastProducts(ctx context.Context, pvzID uuid.UUID) error
 	CloseLastReceptions(pvzID uuid.UUID) error
 	CreateUser(email string, password string, role string) (*model.RegisterResp, error)
 	Login(ctx context.Context, email string, password string) (userID uuid.UUID, role string, err error)

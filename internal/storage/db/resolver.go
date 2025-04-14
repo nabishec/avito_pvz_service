@@ -174,10 +174,10 @@ func (r *Storage) AddProduct(pvzID uuid.UUID, productType string) (*model.Produc
 	return product, nil
 }
 
-func (r *Storage) DeleteLastProducts(pvzID uuid.UUID) error {
+func (r *Storage) DeleteLastProducts(ctx context.Context, pvzID uuid.UUID) error {
 	op := "internal.storage.db.DeleteLastProducts()"
 	log.Debug().Msgf("%s start", op)
-	tx, err := r.db.Beginx()
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("%s:%w", op, err)
 	}

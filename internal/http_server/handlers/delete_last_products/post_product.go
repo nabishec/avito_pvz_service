@@ -68,7 +68,7 @@ func (h *DeleteLastProducts) DeleteProducts(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err = h.PostDeleteLastProducts.DeleteLastProducts(pvzID)
+	err = h.PostDeleteLastProducts.DeleteLastProducts(r.Context(), pvzID)
 	if err != nil {
 		if err == storage.ErrOpenReceptionNotExist {
 			logger.Error().Msg("Active reception not exist")

@@ -5,6 +5,7 @@ package deletelastproducts
 //go:generate minimock -i github.com/nabishec/avito_pvz_service/internal/http_server/handlers/delete_last_products.PostDeleteLastProducts -o post_delete_last_products_mock_test.go -n PostDeleteLastProductsMock -p deletelastproducts
 
 import (
+	"context"
 	"sync"
 	mm_atomic "sync/atomic"
 	mm_time "time"
@@ -18,9 +19,9 @@ type PostDeleteLastProductsMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
 
-	funcDeleteLastProducts          func(pvzID uuid.UUID) (err error)
+	funcDeleteLastProducts          func(ctx context.Context, pvzID uuid.UUID) (err error)
 	funcDeleteLastProductsOrigin    string
-	inspectFuncDeleteLastProducts   func(pvzID uuid.UUID)
+	inspectFuncDeleteLastProducts   func(ctx context.Context, pvzID uuid.UUID)
 	afterDeleteLastProductsCounter  uint64
 	beforeDeleteLastProductsCounter uint64
 	DeleteLastProductsMock          mPostDeleteLastProductsMockDeleteLastProducts
@@ -68,11 +69,13 @@ type PostDeleteLastProductsMockDeleteLastProductsExpectation struct {
 
 // PostDeleteLastProductsMockDeleteLastProductsParams contains parameters of the PostDeleteLastProducts.DeleteLastProducts
 type PostDeleteLastProductsMockDeleteLastProductsParams struct {
+	ctx   context.Context
 	pvzID uuid.UUID
 }
 
 // PostDeleteLastProductsMockDeleteLastProductsParamPtrs contains pointers to parameters of the PostDeleteLastProducts.DeleteLastProducts
 type PostDeleteLastProductsMockDeleteLastProductsParamPtrs struct {
+	ctx   *context.Context
 	pvzID *uuid.UUID
 }
 
@@ -84,6 +87,7 @@ type PostDeleteLastProductsMockDeleteLastProductsResults struct {
 // PostDeleteLastProductsMockDeleteLastProductsOrigins contains origins of expectations of the PostDeleteLastProducts.DeleteLastProducts
 type PostDeleteLastProductsMockDeleteLastProductsExpectationOrigins struct {
 	origin      string
+	originCtx   string
 	originPvzID string
 }
 
@@ -98,7 +102,7 @@ func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) Optio
 }
 
 // Expect sets up expected params for PostDeleteLastProducts.DeleteLastProducts
-func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) Expect(pvzID uuid.UUID) *mPostDeleteLastProductsMockDeleteLastProducts {
+func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) Expect(ctx context.Context, pvzID uuid.UUID) *mPostDeleteLastProductsMockDeleteLastProducts {
 	if mmDeleteLastProducts.mock.funcDeleteLastProducts != nil {
 		mmDeleteLastProducts.mock.t.Fatalf("PostDeleteLastProductsMock.DeleteLastProducts mock is already set by Set")
 	}
@@ -111,7 +115,7 @@ func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) Expec
 		mmDeleteLastProducts.mock.t.Fatalf("PostDeleteLastProductsMock.DeleteLastProducts mock is already set by ExpectParams functions")
 	}
 
-	mmDeleteLastProducts.defaultExpectation.params = &PostDeleteLastProductsMockDeleteLastProductsParams{pvzID}
+	mmDeleteLastProducts.defaultExpectation.params = &PostDeleteLastProductsMockDeleteLastProductsParams{ctx, pvzID}
 	mmDeleteLastProducts.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
 	for _, e := range mmDeleteLastProducts.expectations {
 		if minimock.Equal(e.params, mmDeleteLastProducts.defaultExpectation.params) {
@@ -122,8 +126,31 @@ func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) Expec
 	return mmDeleteLastProducts
 }
 
-// ExpectPvzIDParam1 sets up expected param pvzID for PostDeleteLastProducts.DeleteLastProducts
-func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) ExpectPvzIDParam1(pvzID uuid.UUID) *mPostDeleteLastProductsMockDeleteLastProducts {
+// ExpectCtxParam1 sets up expected param ctx for PostDeleteLastProducts.DeleteLastProducts
+func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) ExpectCtxParam1(ctx context.Context) *mPostDeleteLastProductsMockDeleteLastProducts {
+	if mmDeleteLastProducts.mock.funcDeleteLastProducts != nil {
+		mmDeleteLastProducts.mock.t.Fatalf("PostDeleteLastProductsMock.DeleteLastProducts mock is already set by Set")
+	}
+
+	if mmDeleteLastProducts.defaultExpectation == nil {
+		mmDeleteLastProducts.defaultExpectation = &PostDeleteLastProductsMockDeleteLastProductsExpectation{}
+	}
+
+	if mmDeleteLastProducts.defaultExpectation.params != nil {
+		mmDeleteLastProducts.mock.t.Fatalf("PostDeleteLastProductsMock.DeleteLastProducts mock is already set by Expect")
+	}
+
+	if mmDeleteLastProducts.defaultExpectation.paramPtrs == nil {
+		mmDeleteLastProducts.defaultExpectation.paramPtrs = &PostDeleteLastProductsMockDeleteLastProductsParamPtrs{}
+	}
+	mmDeleteLastProducts.defaultExpectation.paramPtrs.ctx = &ctx
+	mmDeleteLastProducts.defaultExpectation.expectationOrigins.originCtx = minimock.CallerInfo(1)
+
+	return mmDeleteLastProducts
+}
+
+// ExpectPvzIDParam2 sets up expected param pvzID for PostDeleteLastProducts.DeleteLastProducts
+func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) ExpectPvzIDParam2(pvzID uuid.UUID) *mPostDeleteLastProductsMockDeleteLastProducts {
 	if mmDeleteLastProducts.mock.funcDeleteLastProducts != nil {
 		mmDeleteLastProducts.mock.t.Fatalf("PostDeleteLastProductsMock.DeleteLastProducts mock is already set by Set")
 	}
@@ -146,7 +173,7 @@ func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) Expec
 }
 
 // Inspect accepts an inspector function that has same arguments as the PostDeleteLastProducts.DeleteLastProducts
-func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) Inspect(f func(pvzID uuid.UUID)) *mPostDeleteLastProductsMockDeleteLastProducts {
+func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) Inspect(f func(ctx context.Context, pvzID uuid.UUID)) *mPostDeleteLastProductsMockDeleteLastProducts {
 	if mmDeleteLastProducts.mock.inspectFuncDeleteLastProducts != nil {
 		mmDeleteLastProducts.mock.t.Fatalf("Inspect function is already set for PostDeleteLastProductsMock.DeleteLastProducts")
 	}
@@ -171,7 +198,7 @@ func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) Retur
 }
 
 // Set uses given function f to mock the PostDeleteLastProducts.DeleteLastProducts method
-func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) Set(f func(pvzID uuid.UUID) (err error)) *PostDeleteLastProductsMock {
+func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) Set(f func(ctx context.Context, pvzID uuid.UUID) (err error)) *PostDeleteLastProductsMock {
 	if mmDeleteLastProducts.defaultExpectation != nil {
 		mmDeleteLastProducts.mock.t.Fatalf("Default expectation is already set for the PostDeleteLastProducts.DeleteLastProducts method")
 	}
@@ -187,14 +214,14 @@ func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) Set(f
 
 // When sets expectation for the PostDeleteLastProducts.DeleteLastProducts which will trigger the result defined by the following
 // Then helper
-func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) When(pvzID uuid.UUID) *PostDeleteLastProductsMockDeleteLastProductsExpectation {
+func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) When(ctx context.Context, pvzID uuid.UUID) *PostDeleteLastProductsMockDeleteLastProductsExpectation {
 	if mmDeleteLastProducts.mock.funcDeleteLastProducts != nil {
 		mmDeleteLastProducts.mock.t.Fatalf("PostDeleteLastProductsMock.DeleteLastProducts mock is already set by Set")
 	}
 
 	expectation := &PostDeleteLastProductsMockDeleteLastProductsExpectation{
 		mock:               mmDeleteLastProducts.mock,
-		params:             &PostDeleteLastProductsMockDeleteLastProductsParams{pvzID},
+		params:             &PostDeleteLastProductsMockDeleteLastProductsParams{ctx, pvzID},
 		expectationOrigins: PostDeleteLastProductsMockDeleteLastProductsExpectationOrigins{origin: minimock.CallerInfo(1)},
 	}
 	mmDeleteLastProducts.expectations = append(mmDeleteLastProducts.expectations, expectation)
@@ -229,17 +256,17 @@ func (mmDeleteLastProducts *mPostDeleteLastProductsMockDeleteLastProducts) invoc
 }
 
 // DeleteLastProducts implements PostDeleteLastProducts
-func (mmDeleteLastProducts *PostDeleteLastProductsMock) DeleteLastProducts(pvzID uuid.UUID) (err error) {
+func (mmDeleteLastProducts *PostDeleteLastProductsMock) DeleteLastProducts(ctx context.Context, pvzID uuid.UUID) (err error) {
 	mm_atomic.AddUint64(&mmDeleteLastProducts.beforeDeleteLastProductsCounter, 1)
 	defer mm_atomic.AddUint64(&mmDeleteLastProducts.afterDeleteLastProductsCounter, 1)
 
 	mmDeleteLastProducts.t.Helper()
 
 	if mmDeleteLastProducts.inspectFuncDeleteLastProducts != nil {
-		mmDeleteLastProducts.inspectFuncDeleteLastProducts(pvzID)
+		mmDeleteLastProducts.inspectFuncDeleteLastProducts(ctx, pvzID)
 	}
 
-	mm_params := PostDeleteLastProductsMockDeleteLastProductsParams{pvzID}
+	mm_params := PostDeleteLastProductsMockDeleteLastProductsParams{ctx, pvzID}
 
 	// Record call args
 	mmDeleteLastProducts.DeleteLastProductsMock.mutex.Lock()
@@ -258,9 +285,14 @@ func (mmDeleteLastProducts *PostDeleteLastProductsMock) DeleteLastProducts(pvzID
 		mm_want := mmDeleteLastProducts.DeleteLastProductsMock.defaultExpectation.params
 		mm_want_ptrs := mmDeleteLastProducts.DeleteLastProductsMock.defaultExpectation.paramPtrs
 
-		mm_got := PostDeleteLastProductsMockDeleteLastProductsParams{pvzID}
+		mm_got := PostDeleteLastProductsMockDeleteLastProductsParams{ctx, pvzID}
 
 		if mm_want_ptrs != nil {
+
+			if mm_want_ptrs.ctx != nil && !minimock.Equal(*mm_want_ptrs.ctx, mm_got.ctx) {
+				mmDeleteLastProducts.t.Errorf("PostDeleteLastProductsMock.DeleteLastProducts got unexpected parameter ctx, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmDeleteLastProducts.DeleteLastProductsMock.defaultExpectation.expectationOrigins.originCtx, *mm_want_ptrs.ctx, mm_got.ctx, minimock.Diff(*mm_want_ptrs.ctx, mm_got.ctx))
+			}
 
 			if mm_want_ptrs.pvzID != nil && !minimock.Equal(*mm_want_ptrs.pvzID, mm_got.pvzID) {
 				mmDeleteLastProducts.t.Errorf("PostDeleteLastProductsMock.DeleteLastProducts got unexpected parameter pvzID, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
@@ -279,9 +311,9 @@ func (mmDeleteLastProducts *PostDeleteLastProductsMock) DeleteLastProducts(pvzID
 		return (*mm_results).err
 	}
 	if mmDeleteLastProducts.funcDeleteLastProducts != nil {
-		return mmDeleteLastProducts.funcDeleteLastProducts(pvzID)
+		return mmDeleteLastProducts.funcDeleteLastProducts(ctx, pvzID)
 	}
-	mmDeleteLastProducts.t.Fatalf("Unexpected call to PostDeleteLastProductsMock.DeleteLastProducts. %v", pvzID)
+	mmDeleteLastProducts.t.Fatalf("Unexpected call to PostDeleteLastProductsMock.DeleteLastProducts. %v %v", ctx, pvzID)
 	return
 }
 
