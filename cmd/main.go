@@ -8,8 +8,11 @@ import (
 	"sync"
 
 	"github.com/joho/godotenv"
-	dbconnection "github.com/nabishec/avito_pvz_service/cmd/db_connection"
+
 	_ "github.com/nabishec/avito_pvz_service/docs"
+	dbconnection "github.com/nabishec/avito_pvz_service/internal/app/db_connection"
+	grpcserver "github.com/nabishec/avito_pvz_service/internal/app/grpc_server"
+	httpserver "github.com/nabishec/avito_pvz_service/internal/app/http_server"
 	"github.com/nabishec/avito_pvz_service/internal/metrics"
 	"github.com/nabishec/avito_pvz_service/internal/storage/db"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -58,9 +61,9 @@ func main() {
 
 	storage := db.NewStorage(dbConnection.DB)
 
-	grpcServer := NewGRPCServer(storage)
-	httpServer := NewHTTPServer(storage)
-	serverPrometheus := NewHTTPServer(storage)
+	grpcServer := grpcserver.NewGRPCServer(storage)
+	httpServer := httpserver.NewHTTPServer(storage)
+	serverPrometheus := httpserver.NewHTTPServer(storage)
 
 	//  run server
 	var wg sync.WaitGroup

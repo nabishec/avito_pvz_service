@@ -1,15 +1,29 @@
-package main
+package integrationtest
 
 import (
 	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"sync"
 	"testing"
 
+	"github.com/go-chi/chi"
+	"github.com/joho/godotenv"
 	dbconnection "github.com/nabishec/avito_pvz_service/cmd/db_connection"
+	addproducts "github.com/nabishec/avito_pvz_service/internal/http_server/handlers/add_products"
+	addpvz "github.com/nabishec/avito_pvz_service/internal/http_server/handlers/add_pvz"
+	"github.com/nabishec/avito_pvz_service/internal/http_server/handlers/auth"
+	closelastreceptions "github.com/nabishec/avito_pvz_service/internal/http_server/handlers/close_last_receptions"
+	deletelastproducts "github.com/nabishec/avito_pvz_service/internal/http_server/handlers/delete_last_products"
+	getpvzlist "github.com/nabishec/avito_pvz_service/internal/http_server/handlers/get_pvz_list"
+	"github.com/nabishec/avito_pvz_service/internal/http_server/handlers/login"
+	opennewreceptions "github.com/nabishec/avito_pvz_service/internal/http_server/handlers/open_new_receptions"
+	roottoken "github.com/nabishec/avito_pvz_service/internal/http_server/handlers/root_token"
+	custommiddleware "github.com/nabishec/avito_pvz_service/internal/http_server/middleware"
 	"github.com/nabishec/avito_pvz_service/internal/model"
+	"github.com/nabishec/avito_pvz_service/internal/storage"
 	"github.com/nabishec/avito_pvz_service/internal/storage/db"
 )
 
@@ -51,7 +65,7 @@ func testGetTokenForClient(t *testing.T, s *httpServer, role string) string {
 }
 
 func TestService(t *testing.T) {
-	err := LoadEnv()
+	err := loadEnv()
 	if err != nil {
 		t.Error("Don't found config")
 	}
@@ -63,8 +77,8 @@ func TestService(t *testing.T) {
 
 	storage := db.NewStorage(dbConnection.DB)
 
-	s := NewHTTPServer(storage)
-	s.MountHandlers()
+	s := newHTTPServer(storage)
+	s.mountHandlers()
 	tokenClient := testGetTokenForClient(t, s, "client")
 	tokenModerator := testGetTokenForClient(t, s, "moderator")
 	var pvzResp model.PVZResp
@@ -146,4 +160,54 @@ func TestService(t *testing.T) {
 		response := executeRequest(req, s)
 		checkResponseCode(t, http.StatusOK, response.Code)
 	})
+}
+
+type httpServer struct {
+	Storage storage.StorageImp
+	Router  *chi.Mux
+}
+
+func newHTTPServer(storage storage.StorageImp) *httpServer {
+	return &httpServer{
+		Storage: storage,
+		Router:  chi.NewRouter(),
+	}
+}
+
+func (s *httpServer) mountHandlers() {
+	rootToken := roottoken.NewRootToken()
+	pvz := addpvz.NewPVZ(s.Storage)
+	receptions := opennewreceptions.NewReceptions(s.Storage)
+	products := addproducts.NewProducts(s.Storage)
+	deleteLastProduct := deletelastproducts.NewDeleteProducts(s.Storage)
+	closeLastReceptions := closelastreceptions.NewCloseLastReceptions(s.Storage)
+	auth := auth.NewAuth(s.Storage)
+	login := login.NewLogin(s.Storage)
+	pvzList := getpvzlist.NewPVZ(s.Storage)
+
+	s.Router.Group(func(r chi.Router) {
+		r.Post("/dummyLogin", rootToken.ReturnRootToken)
+		r.Post("/register", auth.Register)
+		r.Post("/login", login.Login)
+	})
+
+	s.Router.Group(func(r chi.Router) {
+		r.Use(custommiddleware.Auth)
+		r.Post("/pvz", pvz.AddPVZ)
+		r.Post("/receptions", receptions.AddReceptions)
+		r.Post("/products", products.AddProducts)
+		r.Post("/pvz/{pvzId}/delete_last_product", deleteLastProduct.DeleteProducts)
+		r.Post("/pvz/{pvzId}/close_last_reception", closeLastReceptions.CloseLastReceptions)
+		r.Get("/pvz", pvzList.GetPVZList)
+	})
+}
+
+func loadEnv() error {
+	if err := godotenv.Load(".env"); err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return err
+	}
+	return nil
 }
