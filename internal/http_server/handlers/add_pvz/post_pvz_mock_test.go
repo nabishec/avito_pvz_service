@@ -5,6 +5,7 @@ package addpvz
 //go:generate minimock -i github.com/nabishec/avito_pvz_service/internal/http_server/handlers/add_pvz.PostPVZ -o post_pvz_mock_test.go -n PostPVZMock -p addpvz
 
 import (
+	"context"
 	"sync"
 	mm_atomic "sync/atomic"
 	mm_time "time"
@@ -18,9 +19,9 @@ type PostPVZMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
 
-	funcAddPVZ          func(city string) (pp1 *model.PVZResp, err error)
+	funcAddPVZ          func(ctx context.Context, city string) (pp1 *model.PVZResp, err error)
 	funcAddPVZOrigin    string
-	inspectFuncAddPVZ   func(city string)
+	inspectFuncAddPVZ   func(ctx context.Context, city string)
 	afterAddPVZCounter  uint64
 	beforeAddPVZCounter uint64
 	AddPVZMock          mPostPVZMockAddPVZ
@@ -68,11 +69,13 @@ type PostPVZMockAddPVZExpectation struct {
 
 // PostPVZMockAddPVZParams contains parameters of the PostPVZ.AddPVZ
 type PostPVZMockAddPVZParams struct {
+	ctx  context.Context
 	city string
 }
 
 // PostPVZMockAddPVZParamPtrs contains pointers to parameters of the PostPVZ.AddPVZ
 type PostPVZMockAddPVZParamPtrs struct {
+	ctx  *context.Context
 	city *string
 }
 
@@ -85,6 +88,7 @@ type PostPVZMockAddPVZResults struct {
 // PostPVZMockAddPVZOrigins contains origins of expectations of the PostPVZ.AddPVZ
 type PostPVZMockAddPVZExpectationOrigins struct {
 	origin     string
+	originCtx  string
 	originCity string
 }
 
@@ -99,7 +103,7 @@ func (mmAddPVZ *mPostPVZMockAddPVZ) Optional() *mPostPVZMockAddPVZ {
 }
 
 // Expect sets up expected params for PostPVZ.AddPVZ
-func (mmAddPVZ *mPostPVZMockAddPVZ) Expect(city string) *mPostPVZMockAddPVZ {
+func (mmAddPVZ *mPostPVZMockAddPVZ) Expect(ctx context.Context, city string) *mPostPVZMockAddPVZ {
 	if mmAddPVZ.mock.funcAddPVZ != nil {
 		mmAddPVZ.mock.t.Fatalf("PostPVZMock.AddPVZ mock is already set by Set")
 	}
@@ -112,7 +116,7 @@ func (mmAddPVZ *mPostPVZMockAddPVZ) Expect(city string) *mPostPVZMockAddPVZ {
 		mmAddPVZ.mock.t.Fatalf("PostPVZMock.AddPVZ mock is already set by ExpectParams functions")
 	}
 
-	mmAddPVZ.defaultExpectation.params = &PostPVZMockAddPVZParams{city}
+	mmAddPVZ.defaultExpectation.params = &PostPVZMockAddPVZParams{ctx, city}
 	mmAddPVZ.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
 	for _, e := range mmAddPVZ.expectations {
 		if minimock.Equal(e.params, mmAddPVZ.defaultExpectation.params) {
@@ -123,8 +127,31 @@ func (mmAddPVZ *mPostPVZMockAddPVZ) Expect(city string) *mPostPVZMockAddPVZ {
 	return mmAddPVZ
 }
 
-// ExpectCityParam1 sets up expected param city for PostPVZ.AddPVZ
-func (mmAddPVZ *mPostPVZMockAddPVZ) ExpectCityParam1(city string) *mPostPVZMockAddPVZ {
+// ExpectCtxParam1 sets up expected param ctx for PostPVZ.AddPVZ
+func (mmAddPVZ *mPostPVZMockAddPVZ) ExpectCtxParam1(ctx context.Context) *mPostPVZMockAddPVZ {
+	if mmAddPVZ.mock.funcAddPVZ != nil {
+		mmAddPVZ.mock.t.Fatalf("PostPVZMock.AddPVZ mock is already set by Set")
+	}
+
+	if mmAddPVZ.defaultExpectation == nil {
+		mmAddPVZ.defaultExpectation = &PostPVZMockAddPVZExpectation{}
+	}
+
+	if mmAddPVZ.defaultExpectation.params != nil {
+		mmAddPVZ.mock.t.Fatalf("PostPVZMock.AddPVZ mock is already set by Expect")
+	}
+
+	if mmAddPVZ.defaultExpectation.paramPtrs == nil {
+		mmAddPVZ.defaultExpectation.paramPtrs = &PostPVZMockAddPVZParamPtrs{}
+	}
+	mmAddPVZ.defaultExpectation.paramPtrs.ctx = &ctx
+	mmAddPVZ.defaultExpectation.expectationOrigins.originCtx = minimock.CallerInfo(1)
+
+	return mmAddPVZ
+}
+
+// ExpectCityParam2 sets up expected param city for PostPVZ.AddPVZ
+func (mmAddPVZ *mPostPVZMockAddPVZ) ExpectCityParam2(city string) *mPostPVZMockAddPVZ {
 	if mmAddPVZ.mock.funcAddPVZ != nil {
 		mmAddPVZ.mock.t.Fatalf("PostPVZMock.AddPVZ mock is already set by Set")
 	}
@@ -147,7 +174,7 @@ func (mmAddPVZ *mPostPVZMockAddPVZ) ExpectCityParam1(city string) *mPostPVZMockA
 }
 
 // Inspect accepts an inspector function that has same arguments as the PostPVZ.AddPVZ
-func (mmAddPVZ *mPostPVZMockAddPVZ) Inspect(f func(city string)) *mPostPVZMockAddPVZ {
+func (mmAddPVZ *mPostPVZMockAddPVZ) Inspect(f func(ctx context.Context, city string)) *mPostPVZMockAddPVZ {
 	if mmAddPVZ.mock.inspectFuncAddPVZ != nil {
 		mmAddPVZ.mock.t.Fatalf("Inspect function is already set for PostPVZMock.AddPVZ")
 	}
@@ -172,7 +199,7 @@ func (mmAddPVZ *mPostPVZMockAddPVZ) Return(pp1 *model.PVZResp, err error) *PostP
 }
 
 // Set uses given function f to mock the PostPVZ.AddPVZ method
-func (mmAddPVZ *mPostPVZMockAddPVZ) Set(f func(city string) (pp1 *model.PVZResp, err error)) *PostPVZMock {
+func (mmAddPVZ *mPostPVZMockAddPVZ) Set(f func(ctx context.Context, city string) (pp1 *model.PVZResp, err error)) *PostPVZMock {
 	if mmAddPVZ.defaultExpectation != nil {
 		mmAddPVZ.mock.t.Fatalf("Default expectation is already set for the PostPVZ.AddPVZ method")
 	}
@@ -188,14 +215,14 @@ func (mmAddPVZ *mPostPVZMockAddPVZ) Set(f func(city string) (pp1 *model.PVZResp,
 
 // When sets expectation for the PostPVZ.AddPVZ which will trigger the result defined by the following
 // Then helper
-func (mmAddPVZ *mPostPVZMockAddPVZ) When(city string) *PostPVZMockAddPVZExpectation {
+func (mmAddPVZ *mPostPVZMockAddPVZ) When(ctx context.Context, city string) *PostPVZMockAddPVZExpectation {
 	if mmAddPVZ.mock.funcAddPVZ != nil {
 		mmAddPVZ.mock.t.Fatalf("PostPVZMock.AddPVZ mock is already set by Set")
 	}
 
 	expectation := &PostPVZMockAddPVZExpectation{
 		mock:               mmAddPVZ.mock,
-		params:             &PostPVZMockAddPVZParams{city},
+		params:             &PostPVZMockAddPVZParams{ctx, city},
 		expectationOrigins: PostPVZMockAddPVZExpectationOrigins{origin: minimock.CallerInfo(1)},
 	}
 	mmAddPVZ.expectations = append(mmAddPVZ.expectations, expectation)
@@ -230,17 +257,17 @@ func (mmAddPVZ *mPostPVZMockAddPVZ) invocationsDone() bool {
 }
 
 // AddPVZ implements PostPVZ
-func (mmAddPVZ *PostPVZMock) AddPVZ(city string) (pp1 *model.PVZResp, err error) {
+func (mmAddPVZ *PostPVZMock) AddPVZ(ctx context.Context, city string) (pp1 *model.PVZResp, err error) {
 	mm_atomic.AddUint64(&mmAddPVZ.beforeAddPVZCounter, 1)
 	defer mm_atomic.AddUint64(&mmAddPVZ.afterAddPVZCounter, 1)
 
 	mmAddPVZ.t.Helper()
 
 	if mmAddPVZ.inspectFuncAddPVZ != nil {
-		mmAddPVZ.inspectFuncAddPVZ(city)
+		mmAddPVZ.inspectFuncAddPVZ(ctx, city)
 	}
 
-	mm_params := PostPVZMockAddPVZParams{city}
+	mm_params := PostPVZMockAddPVZParams{ctx, city}
 
 	// Record call args
 	mmAddPVZ.AddPVZMock.mutex.Lock()
@@ -259,9 +286,14 @@ func (mmAddPVZ *PostPVZMock) AddPVZ(city string) (pp1 *model.PVZResp, err error)
 		mm_want := mmAddPVZ.AddPVZMock.defaultExpectation.params
 		mm_want_ptrs := mmAddPVZ.AddPVZMock.defaultExpectation.paramPtrs
 
-		mm_got := PostPVZMockAddPVZParams{city}
+		mm_got := PostPVZMockAddPVZParams{ctx, city}
 
 		if mm_want_ptrs != nil {
+
+			if mm_want_ptrs.ctx != nil && !minimock.Equal(*mm_want_ptrs.ctx, mm_got.ctx) {
+				mmAddPVZ.t.Errorf("PostPVZMock.AddPVZ got unexpected parameter ctx, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmAddPVZ.AddPVZMock.defaultExpectation.expectationOrigins.originCtx, *mm_want_ptrs.ctx, mm_got.ctx, minimock.Diff(*mm_want_ptrs.ctx, mm_got.ctx))
+			}
 
 			if mm_want_ptrs.city != nil && !minimock.Equal(*mm_want_ptrs.city, mm_got.city) {
 				mmAddPVZ.t.Errorf("PostPVZMock.AddPVZ got unexpected parameter city, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
@@ -280,9 +312,9 @@ func (mmAddPVZ *PostPVZMock) AddPVZ(city string) (pp1 *model.PVZResp, err error)
 		return (*mm_results).pp1, (*mm_results).err
 	}
 	if mmAddPVZ.funcAddPVZ != nil {
-		return mmAddPVZ.funcAddPVZ(city)
+		return mmAddPVZ.funcAddPVZ(ctx, city)
 	}
-	mmAddPVZ.t.Fatalf("Unexpected call to PostPVZMock.AddPVZ. %v", city)
+	mmAddPVZ.t.Fatalf("Unexpected call to PostPVZMock.AddPVZ. %v %v", ctx, city)
 	return
 }
 

@@ -31,7 +31,7 @@ const querySelectOpenReceptions = `SELECT id
 								  WHERE pvz_id = $1
 								  AND status = 'in_progress'`
 
-func (r *Storage) AddPVZ(city string) (*model.PVZResp, error) {
+func (r *Storage) AddPVZ(ctx context.Context, city string) (*model.PVZResp, error) {
 	const op = "internal.storage.db.AddPVZ()"
 
 	log.Debug().Msgf("%s start", op)
@@ -45,7 +45,7 @@ func (r *Storage) AddPVZ(city string) (*model.PVZResp, error) {
 	queryAddPVZ := `INSERT INTO pvzs (id, registration_date, city)
 					VALUES ($1, $2, $3)`
 
-	_, err := r.db.Exec(queryAddPVZ, pvz.ID, pvz.RegistrationDate, pvz.City)
+	_, err := r.db.ExecContext(ctx, queryAddPVZ, pvz.ID, pvz.RegistrationDate, pvz.City)
 	if err != nil {
 		err = fmt.Errorf("%s:%w", op, err)
 		return nil, err

@@ -9,7 +9,7 @@ import (
 )
 
 type StorageImp interface {
-	AddPVZ(city string) (*model.PVZResp, error)
+	AddPVZ(ctx context.Context, city string) (*model.PVZResp, error)
 	AddReception(ctx context.Context, pvzID uuid.UUID) (*model.ReceptionsResp, error)
 	AddProduct(pvzID uuid.UUID, productType string) (*model.ProductsResp, error)
 	DeleteLastProducts(ctx context.Context, pvzID uuid.UUID) error

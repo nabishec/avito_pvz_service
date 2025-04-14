@@ -80,7 +80,7 @@ func (h *PVZ) AddPVZ(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pvz, err := h.PostPVZ.AddPVZ(pvzReq.City)
+	pvz, err := h.PostPVZ.AddPVZ(r.Context(), pvzReq.City)
 	if err != nil {
 		logger.Error().Msg("Failed to add pvz")
 
