@@ -61,17 +61,23 @@ docker-compose up -d
 
 ## 🧪 Тестирование
 
-Для запуска тестов:
-
-```bash
-go test ./... -v
-```
 Был создан интеграционный [тест](integration_test/api_test.go)
+```bash
+go test ./integration_test/... 
+```
 А также юнит [тесты](internal/http_server/handlers) для бизнес логики.
+
 Для проверки покрытия кода тестами:
 
 ```bash
-go tool cover -func cover.out     
+go test ./... -coverprofile cover.out.tmp   
+```
+
+Для проверки покрытия функций бизнес логики тестами
+```bash
+go test ./internal/http_server/handlers/... -coverprofile cover.out 
+
+go tool cover -func cover.out
 ```
 
 ![Покрытие бизнес логики юнит тестами](image.png)
