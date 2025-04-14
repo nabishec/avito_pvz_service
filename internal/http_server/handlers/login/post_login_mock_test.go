@@ -5,6 +5,7 @@ package login
 //go:generate minimock -i github.com/nabishec/avito_pvz_service/internal/http_server/handlers/login.PostLogin -o post_login_mock_test.go -n PostLoginMock -p login
 
 import (
+	"context"
 	"sync"
 	mm_atomic "sync/atomic"
 	mm_time "time"
@@ -18,9 +19,9 @@ type PostLoginMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
 
-	funcLogin          func(email string, password string) (userID uuid.UUID, role string, err error)
+	funcLogin          func(ctx context.Context, email string, password string) (userID uuid.UUID, role string, err error)
 	funcLoginOrigin    string
-	inspectFuncLogin   func(email string, password string)
+	inspectFuncLogin   func(ctx context.Context, email string, password string)
 	afterLoginCounter  uint64
 	beforeLoginCounter uint64
 	LoginMock          mPostLoginMockLogin
@@ -68,12 +69,14 @@ type PostLoginMockLoginExpectation struct {
 
 // PostLoginMockLoginParams contains parameters of the PostLogin.Login
 type PostLoginMockLoginParams struct {
+	ctx      context.Context
 	email    string
 	password string
 }
 
 // PostLoginMockLoginParamPtrs contains pointers to parameters of the PostLogin.Login
 type PostLoginMockLoginParamPtrs struct {
+	ctx      *context.Context
 	email    *string
 	password *string
 }
@@ -88,6 +91,7 @@ type PostLoginMockLoginResults struct {
 // PostLoginMockLoginOrigins contains origins of expectations of the PostLogin.Login
 type PostLoginMockLoginExpectationOrigins struct {
 	origin         string
+	originCtx      string
 	originEmail    string
 	originPassword string
 }
@@ -103,7 +107,7 @@ func (mmLogin *mPostLoginMockLogin) Optional() *mPostLoginMockLogin {
 }
 
 // Expect sets up expected params for PostLogin.Login
-func (mmLogin *mPostLoginMockLogin) Expect(email string, password string) *mPostLoginMockLogin {
+func (mmLogin *mPostLoginMockLogin) Expect(ctx context.Context, email string, password string) *mPostLoginMockLogin {
 	if mmLogin.mock.funcLogin != nil {
 		mmLogin.mock.t.Fatalf("PostLoginMock.Login mock is already set by Set")
 	}
@@ -116,7 +120,7 @@ func (mmLogin *mPostLoginMockLogin) Expect(email string, password string) *mPost
 		mmLogin.mock.t.Fatalf("PostLoginMock.Login mock is already set by ExpectParams functions")
 	}
 
-	mmLogin.defaultExpectation.params = &PostLoginMockLoginParams{email, password}
+	mmLogin.defaultExpectation.params = &PostLoginMockLoginParams{ctx, email, password}
 	mmLogin.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
 	for _, e := range mmLogin.expectations {
 		if minimock.Equal(e.params, mmLogin.defaultExpectation.params) {
@@ -127,8 +131,31 @@ func (mmLogin *mPostLoginMockLogin) Expect(email string, password string) *mPost
 	return mmLogin
 }
 
-// ExpectEmailParam1 sets up expected param email for PostLogin.Login
-func (mmLogin *mPostLoginMockLogin) ExpectEmailParam1(email string) *mPostLoginMockLogin {
+// ExpectCtxParam1 sets up expected param ctx for PostLogin.Login
+func (mmLogin *mPostLoginMockLogin) ExpectCtxParam1(ctx context.Context) *mPostLoginMockLogin {
+	if mmLogin.mock.funcLogin != nil {
+		mmLogin.mock.t.Fatalf("PostLoginMock.Login mock is already set by Set")
+	}
+
+	if mmLogin.defaultExpectation == nil {
+		mmLogin.defaultExpectation = &PostLoginMockLoginExpectation{}
+	}
+
+	if mmLogin.defaultExpectation.params != nil {
+		mmLogin.mock.t.Fatalf("PostLoginMock.Login mock is already set by Expect")
+	}
+
+	if mmLogin.defaultExpectation.paramPtrs == nil {
+		mmLogin.defaultExpectation.paramPtrs = &PostLoginMockLoginParamPtrs{}
+	}
+	mmLogin.defaultExpectation.paramPtrs.ctx = &ctx
+	mmLogin.defaultExpectation.expectationOrigins.originCtx = minimock.CallerInfo(1)
+
+	return mmLogin
+}
+
+// ExpectEmailParam2 sets up expected param email for PostLogin.Login
+func (mmLogin *mPostLoginMockLogin) ExpectEmailParam2(email string) *mPostLoginMockLogin {
 	if mmLogin.mock.funcLogin != nil {
 		mmLogin.mock.t.Fatalf("PostLoginMock.Login mock is already set by Set")
 	}
@@ -150,8 +177,8 @@ func (mmLogin *mPostLoginMockLogin) ExpectEmailParam1(email string) *mPostLoginM
 	return mmLogin
 }
 
-// ExpectPasswordParam2 sets up expected param password for PostLogin.Login
-func (mmLogin *mPostLoginMockLogin) ExpectPasswordParam2(password string) *mPostLoginMockLogin {
+// ExpectPasswordParam3 sets up expected param password for PostLogin.Login
+func (mmLogin *mPostLoginMockLogin) ExpectPasswordParam3(password string) *mPostLoginMockLogin {
 	if mmLogin.mock.funcLogin != nil {
 		mmLogin.mock.t.Fatalf("PostLoginMock.Login mock is already set by Set")
 	}
@@ -174,7 +201,7 @@ func (mmLogin *mPostLoginMockLogin) ExpectPasswordParam2(password string) *mPost
 }
 
 // Inspect accepts an inspector function that has same arguments as the PostLogin.Login
-func (mmLogin *mPostLoginMockLogin) Inspect(f func(email string, password string)) *mPostLoginMockLogin {
+func (mmLogin *mPostLoginMockLogin) Inspect(f func(ctx context.Context, email string, password string)) *mPostLoginMockLogin {
 	if mmLogin.mock.inspectFuncLogin != nil {
 		mmLogin.mock.t.Fatalf("Inspect function is already set for PostLoginMock.Login")
 	}
@@ -199,7 +226,7 @@ func (mmLogin *mPostLoginMockLogin) Return(userID uuid.UUID, role string, err er
 }
 
 // Set uses given function f to mock the PostLogin.Login method
-func (mmLogin *mPostLoginMockLogin) Set(f func(email string, password string) (userID uuid.UUID, role string, err error)) *PostLoginMock {
+func (mmLogin *mPostLoginMockLogin) Set(f func(ctx context.Context, email string, password string) (userID uuid.UUID, role string, err error)) *PostLoginMock {
 	if mmLogin.defaultExpectation != nil {
 		mmLogin.mock.t.Fatalf("Default expectation is already set for the PostLogin.Login method")
 	}
@@ -215,14 +242,14 @@ func (mmLogin *mPostLoginMockLogin) Set(f func(email string, password string) (u
 
 // When sets expectation for the PostLogin.Login which will trigger the result defined by the following
 // Then helper
-func (mmLogin *mPostLoginMockLogin) When(email string, password string) *PostLoginMockLoginExpectation {
+func (mmLogin *mPostLoginMockLogin) When(ctx context.Context, email string, password string) *PostLoginMockLoginExpectation {
 	if mmLogin.mock.funcLogin != nil {
 		mmLogin.mock.t.Fatalf("PostLoginMock.Login mock is already set by Set")
 	}
 
 	expectation := &PostLoginMockLoginExpectation{
 		mock:               mmLogin.mock,
-		params:             &PostLoginMockLoginParams{email, password},
+		params:             &PostLoginMockLoginParams{ctx, email, password},
 		expectationOrigins: PostLoginMockLoginExpectationOrigins{origin: minimock.CallerInfo(1)},
 	}
 	mmLogin.expectations = append(mmLogin.expectations, expectation)
@@ -257,17 +284,17 @@ func (mmLogin *mPostLoginMockLogin) invocationsDone() bool {
 }
 
 // Login implements PostLogin
-func (mmLogin *PostLoginMock) Login(email string, password string) (userID uuid.UUID, role string, err error) {
+func (mmLogin *PostLoginMock) Login(ctx context.Context, email string, password string) (userID uuid.UUID, role string, err error) {
 	mm_atomic.AddUint64(&mmLogin.beforeLoginCounter, 1)
 	defer mm_atomic.AddUint64(&mmLogin.afterLoginCounter, 1)
 
 	mmLogin.t.Helper()
 
 	if mmLogin.inspectFuncLogin != nil {
-		mmLogin.inspectFuncLogin(email, password)
+		mmLogin.inspectFuncLogin(ctx, email, password)
 	}
 
-	mm_params := PostLoginMockLoginParams{email, password}
+	mm_params := PostLoginMockLoginParams{ctx, email, password}
 
 	// Record call args
 	mmLogin.LoginMock.mutex.Lock()
@@ -286,9 +313,14 @@ func (mmLogin *PostLoginMock) Login(email string, password string) (userID uuid.
 		mm_want := mmLogin.LoginMock.defaultExpectation.params
 		mm_want_ptrs := mmLogin.LoginMock.defaultExpectation.paramPtrs
 
-		mm_got := PostLoginMockLoginParams{email, password}
+		mm_got := PostLoginMockLoginParams{ctx, email, password}
 
 		if mm_want_ptrs != nil {
+
+			if mm_want_ptrs.ctx != nil && !minimock.Equal(*mm_want_ptrs.ctx, mm_got.ctx) {
+				mmLogin.t.Errorf("PostLoginMock.Login got unexpected parameter ctx, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmLogin.LoginMock.defaultExpectation.expectationOrigins.originCtx, *mm_want_ptrs.ctx, mm_got.ctx, minimock.Diff(*mm_want_ptrs.ctx, mm_got.ctx))
+			}
 
 			if mm_want_ptrs.email != nil && !minimock.Equal(*mm_want_ptrs.email, mm_got.email) {
 				mmLogin.t.Errorf("PostLoginMock.Login got unexpected parameter email, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
@@ -312,9 +344,9 @@ func (mmLogin *PostLoginMock) Login(email string, password string) (userID uuid.
 		return (*mm_results).userID, (*mm_results).role, (*mm_results).err
 	}
 	if mmLogin.funcLogin != nil {
-		return mmLogin.funcLogin(email, password)
+		return mmLogin.funcLogin(ctx, email, password)
 	}
-	mmLogin.t.Fatalf("Unexpected call to PostLoginMock.Login. %v %v", email, password)
+	mmLogin.t.Fatalf("Unexpected call to PostLoginMock.Login. %v %v %v", ctx, email, password)
 	return
 }
 

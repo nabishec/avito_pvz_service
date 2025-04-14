@@ -58,7 +58,7 @@ func (h *Login) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, role, err := h.PostLogin.Login(loginReq.Email, loginReq.Password)
+	userID, role, err := h.PostLogin.Login(r.Context(), loginReq.Email, loginReq.Password)
 	if err != nil {
 		if err == storage.ErrPasswordIsEmpty {
 			logger.Error().Err(err).Msg("Password is empty")

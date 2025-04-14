@@ -334,7 +334,7 @@ func createPasswordHash(password string) (string, error) {
 	return string(passwordHash), nil
 }
 
-func (r *Storage) Login(email string, password string) (userID uuid.UUID, role string, err error) {
+func (r *Storage) Login(ctx context.Context, email string, password string) (userID uuid.UUID, role string, err error) {
 	op := "internal.storage.db.Login()"
 	log.Debug().Msgf("%s start", op)
 
@@ -344,7 +344,7 @@ func (r *Storage) Login(email string, password string) (userID uuid.UUID, role s
 
 	var passwordHash string
 
-	err = r.db.QueryRow(queryLogin, email).Scan(&userID, &passwordHash, &role)
+	err = r.db.QueryRowContext(ctx, queryLogin, email).Scan(&userID, &passwordHash, &role)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return uuid.Nil, "", storage.ErrUserNotExist
