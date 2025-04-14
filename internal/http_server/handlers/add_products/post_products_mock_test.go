@@ -5,6 +5,7 @@ package addproducts
 //go:generate minimock -i github.com/nabishec/avito_pvz_service/internal/http_server/handlers/add_products.PostProducts -o post_products_mock_test.go -n PostProductsMock -p addproducts
 
 import (
+	"context"
 	"sync"
 	mm_atomic "sync/atomic"
 	mm_time "time"
@@ -19,9 +20,9 @@ type PostProductsMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
 
-	funcAddProduct          func(pvzID uuid.UUID, productType string) (pp1 *model.ProductsResp, err error)
+	funcAddProduct          func(ctx context.Context, pvzID uuid.UUID, productType string) (pp1 *model.ProductsResp, err error)
 	funcAddProductOrigin    string
-	inspectFuncAddProduct   func(pvzID uuid.UUID, productType string)
+	inspectFuncAddProduct   func(ctx context.Context, pvzID uuid.UUID, productType string)
 	afterAddProductCounter  uint64
 	beforeAddProductCounter uint64
 	AddProductMock          mPostProductsMockAddProduct
@@ -69,12 +70,14 @@ type PostProductsMockAddProductExpectation struct {
 
 // PostProductsMockAddProductParams contains parameters of the PostProducts.AddProduct
 type PostProductsMockAddProductParams struct {
+	ctx         context.Context
 	pvzID       uuid.UUID
 	productType string
 }
 
 // PostProductsMockAddProductParamPtrs contains pointers to parameters of the PostProducts.AddProduct
 type PostProductsMockAddProductParamPtrs struct {
+	ctx         *context.Context
 	pvzID       *uuid.UUID
 	productType *string
 }
@@ -88,6 +91,7 @@ type PostProductsMockAddProductResults struct {
 // PostProductsMockAddProductOrigins contains origins of expectations of the PostProducts.AddProduct
 type PostProductsMockAddProductExpectationOrigins struct {
 	origin            string
+	originCtx         string
 	originPvzID       string
 	originProductType string
 }
@@ -103,7 +107,7 @@ func (mmAddProduct *mPostProductsMockAddProduct) Optional() *mPostProductsMockAd
 }
 
 // Expect sets up expected params for PostProducts.AddProduct
-func (mmAddProduct *mPostProductsMockAddProduct) Expect(pvzID uuid.UUID, productType string) *mPostProductsMockAddProduct {
+func (mmAddProduct *mPostProductsMockAddProduct) Expect(ctx context.Context, pvzID uuid.UUID, productType string) *mPostProductsMockAddProduct {
 	if mmAddProduct.mock.funcAddProduct != nil {
 		mmAddProduct.mock.t.Fatalf("PostProductsMock.AddProduct mock is already set by Set")
 	}
@@ -116,7 +120,7 @@ func (mmAddProduct *mPostProductsMockAddProduct) Expect(pvzID uuid.UUID, product
 		mmAddProduct.mock.t.Fatalf("PostProductsMock.AddProduct mock is already set by ExpectParams functions")
 	}
 
-	mmAddProduct.defaultExpectation.params = &PostProductsMockAddProductParams{pvzID, productType}
+	mmAddProduct.defaultExpectation.params = &PostProductsMockAddProductParams{ctx, pvzID, productType}
 	mmAddProduct.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
 	for _, e := range mmAddProduct.expectations {
 		if minimock.Equal(e.params, mmAddProduct.defaultExpectation.params) {
@@ -127,8 +131,31 @@ func (mmAddProduct *mPostProductsMockAddProduct) Expect(pvzID uuid.UUID, product
 	return mmAddProduct
 }
 
-// ExpectPvzIDParam1 sets up expected param pvzID for PostProducts.AddProduct
-func (mmAddProduct *mPostProductsMockAddProduct) ExpectPvzIDParam1(pvzID uuid.UUID) *mPostProductsMockAddProduct {
+// ExpectCtxParam1 sets up expected param ctx for PostProducts.AddProduct
+func (mmAddProduct *mPostProductsMockAddProduct) ExpectCtxParam1(ctx context.Context) *mPostProductsMockAddProduct {
+	if mmAddProduct.mock.funcAddProduct != nil {
+		mmAddProduct.mock.t.Fatalf("PostProductsMock.AddProduct mock is already set by Set")
+	}
+
+	if mmAddProduct.defaultExpectation == nil {
+		mmAddProduct.defaultExpectation = &PostProductsMockAddProductExpectation{}
+	}
+
+	if mmAddProduct.defaultExpectation.params != nil {
+		mmAddProduct.mock.t.Fatalf("PostProductsMock.AddProduct mock is already set by Expect")
+	}
+
+	if mmAddProduct.defaultExpectation.paramPtrs == nil {
+		mmAddProduct.defaultExpectation.paramPtrs = &PostProductsMockAddProductParamPtrs{}
+	}
+	mmAddProduct.defaultExpectation.paramPtrs.ctx = &ctx
+	mmAddProduct.defaultExpectation.expectationOrigins.originCtx = minimock.CallerInfo(1)
+
+	return mmAddProduct
+}
+
+// ExpectPvzIDParam2 sets up expected param pvzID for PostProducts.AddProduct
+func (mmAddProduct *mPostProductsMockAddProduct) ExpectPvzIDParam2(pvzID uuid.UUID) *mPostProductsMockAddProduct {
 	if mmAddProduct.mock.funcAddProduct != nil {
 		mmAddProduct.mock.t.Fatalf("PostProductsMock.AddProduct mock is already set by Set")
 	}
@@ -150,8 +177,8 @@ func (mmAddProduct *mPostProductsMockAddProduct) ExpectPvzIDParam1(pvzID uuid.UU
 	return mmAddProduct
 }
 
-// ExpectProductTypeParam2 sets up expected param productType for PostProducts.AddProduct
-func (mmAddProduct *mPostProductsMockAddProduct) ExpectProductTypeParam2(productType string) *mPostProductsMockAddProduct {
+// ExpectProductTypeParam3 sets up expected param productType for PostProducts.AddProduct
+func (mmAddProduct *mPostProductsMockAddProduct) ExpectProductTypeParam3(productType string) *mPostProductsMockAddProduct {
 	if mmAddProduct.mock.funcAddProduct != nil {
 		mmAddProduct.mock.t.Fatalf("PostProductsMock.AddProduct mock is already set by Set")
 	}
@@ -174,7 +201,7 @@ func (mmAddProduct *mPostProductsMockAddProduct) ExpectProductTypeParam2(product
 }
 
 // Inspect accepts an inspector function that has same arguments as the PostProducts.AddProduct
-func (mmAddProduct *mPostProductsMockAddProduct) Inspect(f func(pvzID uuid.UUID, productType string)) *mPostProductsMockAddProduct {
+func (mmAddProduct *mPostProductsMockAddProduct) Inspect(f func(ctx context.Context, pvzID uuid.UUID, productType string)) *mPostProductsMockAddProduct {
 	if mmAddProduct.mock.inspectFuncAddProduct != nil {
 		mmAddProduct.mock.t.Fatalf("Inspect function is already set for PostProductsMock.AddProduct")
 	}
@@ -199,7 +226,7 @@ func (mmAddProduct *mPostProductsMockAddProduct) Return(pp1 *model.ProductsResp,
 }
 
 // Set uses given function f to mock the PostProducts.AddProduct method
-func (mmAddProduct *mPostProductsMockAddProduct) Set(f func(pvzID uuid.UUID, productType string) (pp1 *model.ProductsResp, err error)) *PostProductsMock {
+func (mmAddProduct *mPostProductsMockAddProduct) Set(f func(ctx context.Context, pvzID uuid.UUID, productType string) (pp1 *model.ProductsResp, err error)) *PostProductsMock {
 	if mmAddProduct.defaultExpectation != nil {
 		mmAddProduct.mock.t.Fatalf("Default expectation is already set for the PostProducts.AddProduct method")
 	}
@@ -215,14 +242,14 @@ func (mmAddProduct *mPostProductsMockAddProduct) Set(f func(pvzID uuid.UUID, pro
 
 // When sets expectation for the PostProducts.AddProduct which will trigger the result defined by the following
 // Then helper
-func (mmAddProduct *mPostProductsMockAddProduct) When(pvzID uuid.UUID, productType string) *PostProductsMockAddProductExpectation {
+func (mmAddProduct *mPostProductsMockAddProduct) When(ctx context.Context, pvzID uuid.UUID, productType string) *PostProductsMockAddProductExpectation {
 	if mmAddProduct.mock.funcAddProduct != nil {
 		mmAddProduct.mock.t.Fatalf("PostProductsMock.AddProduct mock is already set by Set")
 	}
 
 	expectation := &PostProductsMockAddProductExpectation{
 		mock:               mmAddProduct.mock,
-		params:             &PostProductsMockAddProductParams{pvzID, productType},
+		params:             &PostProductsMockAddProductParams{ctx, pvzID, productType},
 		expectationOrigins: PostProductsMockAddProductExpectationOrigins{origin: minimock.CallerInfo(1)},
 	}
 	mmAddProduct.expectations = append(mmAddProduct.expectations, expectation)
@@ -257,17 +284,17 @@ func (mmAddProduct *mPostProductsMockAddProduct) invocationsDone() bool {
 }
 
 // AddProduct implements PostProducts
-func (mmAddProduct *PostProductsMock) AddProduct(pvzID uuid.UUID, productType string) (pp1 *model.ProductsResp, err error) {
+func (mmAddProduct *PostProductsMock) AddProduct(ctx context.Context, pvzID uuid.UUID, productType string) (pp1 *model.ProductsResp, err error) {
 	mm_atomic.AddUint64(&mmAddProduct.beforeAddProductCounter, 1)
 	defer mm_atomic.AddUint64(&mmAddProduct.afterAddProductCounter, 1)
 
 	mmAddProduct.t.Helper()
 
 	if mmAddProduct.inspectFuncAddProduct != nil {
-		mmAddProduct.inspectFuncAddProduct(pvzID, productType)
+		mmAddProduct.inspectFuncAddProduct(ctx, pvzID, productType)
 	}
 
-	mm_params := PostProductsMockAddProductParams{pvzID, productType}
+	mm_params := PostProductsMockAddProductParams{ctx, pvzID, productType}
 
 	// Record call args
 	mmAddProduct.AddProductMock.mutex.Lock()
@@ -286,9 +313,14 @@ func (mmAddProduct *PostProductsMock) AddProduct(pvzID uuid.UUID, productType st
 		mm_want := mmAddProduct.AddProductMock.defaultExpectation.params
 		mm_want_ptrs := mmAddProduct.AddProductMock.defaultExpectation.paramPtrs
 
-		mm_got := PostProductsMockAddProductParams{pvzID, productType}
+		mm_got := PostProductsMockAddProductParams{ctx, pvzID, productType}
 
 		if mm_want_ptrs != nil {
+
+			if mm_want_ptrs.ctx != nil && !minimock.Equal(*mm_want_ptrs.ctx, mm_got.ctx) {
+				mmAddProduct.t.Errorf("PostProductsMock.AddProduct got unexpected parameter ctx, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmAddProduct.AddProductMock.defaultExpectation.expectationOrigins.originCtx, *mm_want_ptrs.ctx, mm_got.ctx, minimock.Diff(*mm_want_ptrs.ctx, mm_got.ctx))
+			}
 
 			if mm_want_ptrs.pvzID != nil && !minimock.Equal(*mm_want_ptrs.pvzID, mm_got.pvzID) {
 				mmAddProduct.t.Errorf("PostProductsMock.AddProduct got unexpected parameter pvzID, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
@@ -312,9 +344,9 @@ func (mmAddProduct *PostProductsMock) AddProduct(pvzID uuid.UUID, productType st
 		return (*mm_results).pp1, (*mm_results).err
 	}
 	if mmAddProduct.funcAddProduct != nil {
-		return mmAddProduct.funcAddProduct(pvzID, productType)
+		return mmAddProduct.funcAddProduct(ctx, pvzID, productType)
 	}
-	mmAddProduct.t.Fatalf("Unexpected call to PostProductsMock.AddProduct. %v %v", pvzID, productType)
+	mmAddProduct.t.Fatalf("Unexpected call to PostProductsMock.AddProduct. %v %v %v", ctx, pvzID, productType)
 	return
 }
 

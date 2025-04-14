@@ -91,7 +91,7 @@ func (h *Products) AddProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	product, err := h.PostProducts.AddProduct(pvzID, productsReq.Type)
+	product, err := h.PostProducts.AddProduct(r.Context(), pvzID, productsReq.Type)
 	if err != nil {
 		if err == storage.ErrOpenReceptionNotExist {
 			logger.Error().Msg("Active reception not exist")

@@ -125,11 +125,11 @@ func (r *Storage) AddReception(ctx context.Context, pvzID uuid.UUID) (*model.Rec
 	return receptions, nil
 }
 
-func (r *Storage) AddProduct(pvzID uuid.UUID, productType string) (*model.ProductsResp, error) {
+func (r *Storage) AddProduct(ctx context.Context, pvzID uuid.UUID, productType string) (*model.ProductsResp, error) {
 	const op = "internal.storage.db.AddProduct()"
 
 	log.Debug().Msgf("%s start", op)
-	tx, err := r.db.Beginx()
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%s:%w", op, err)
 	}
