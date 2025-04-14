@@ -63,7 +63,7 @@ func (h *Auth) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := h.PostAuth.CreateUser(userReq.Email, userReq.Password, userReq.Role)
+	user, err := h.PostAuth.CreateUser(r.Context(), userReq.Email, userReq.Password, userReq.Role)
 	if err != nil {
 		if err == storage.ErrPasswordIsEmpty {
 			logger.Error().Err(err).Msg("Password is empty")

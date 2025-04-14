@@ -2,6 +2,7 @@ package auth
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -33,7 +34,7 @@ func TestAuth(t *testing.T) {
 	}
 
 	t.Run("Successful registration", func(t *testing.T) {
-		postAuthMock.CreateUserMock.Expect(reqBody.Email, reqBody.Password, reqBody.Role).Return(&model.RegisterResp{
+		postAuthMock.CreateUserMock.Expect(context.Background(), reqBody.Email, reqBody.Password, reqBody.Role).Return(&model.RegisterResp{
 			ID:    uuid.New(),
 			Email: reqBody.Email,
 			Role:  reqBody.Role,
@@ -89,7 +90,7 @@ func TestAuth(t *testing.T) {
 	})
 
 	t.Run("Status bad request user exist", func(t *testing.T) {
-		postAuthMock.CreateUserMock.Expect(reqBody.Email, reqBody.Password, reqBody.Role).Return(nil, storage.ErrUserAlreadyExist)
+		postAuthMock.CreateUserMock.Expect(context.Background(), reqBody.Email, reqBody.Password, reqBody.Role).Return(nil, storage.ErrUserAlreadyExist)
 
 		req := httptest.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(jsonReq))
 		w := httptest.NewRecorder()
@@ -98,7 +99,7 @@ func TestAuth(t *testing.T) {
 	})
 
 	t.Run("Internal Server Error", func(t *testing.T) {
-		postAuthMock.CreateUserMock.Expect(reqBody.Email, reqBody.Password, reqBody.Role).Return(nil, errors.New("not for u"))
+		postAuthMock.CreateUserMock.Expect(context.Background(), reqBody.Email, reqBody.Password, reqBody.Role).Return(nil, errors.New("not for u"))
 
 		req := httptest.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(jsonReq))
 		w := httptest.NewRecorder()

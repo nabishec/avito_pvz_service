@@ -286,7 +286,7 @@ func (r *Storage) CloseLastReceptions(ctx context.Context, pvzID uuid.UUID) erro
 	return nil
 }
 
-func (r *Storage) CreateUser(email string, password string, role string) (*model.RegisterResp, error) {
+func (r *Storage) CreateUser(ctx context.Context, email string, password string, role string) (*model.RegisterResp, error) {
 	const op = "internal.storage.db.CreateUser()"
 
 	log.Debug().Msgf("%s start", op)
@@ -305,7 +305,7 @@ func (r *Storage) CreateUser(email string, password string, role string) (*model
 	queryAddUser := `INSERT INTO users (id, email, password_hash, role, registration_date)
 					VALUES ($1, $2, $3, $4, $5)`
 
-	_, err = r.db.Exec(queryAddUser, user.ID, user.Email, passwordHash, user.Role, time.Now())
+	_, err = r.db.ExecContext(ctx, queryAddUser, user.ID, user.Email, passwordHash, user.Role, time.Now())
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {

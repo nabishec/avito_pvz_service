@@ -5,6 +5,7 @@ package auth
 //go:generate minimock -i github.com/nabishec/avito_pvz_service/internal/http_server/handlers/auth.PostAuth -o post_auth_mock_test.go -n PostAuthMock -p auth
 
 import (
+	"context"
 	"sync"
 	mm_atomic "sync/atomic"
 	mm_time "time"
@@ -18,9 +19,9 @@ type PostAuthMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
 
-	funcCreateUser          func(email string, password string, role string) (rp1 *model.RegisterResp, err error)
+	funcCreateUser          func(ctx context.Context, email string, password string, role string) (rp1 *model.RegisterResp, err error)
 	funcCreateUserOrigin    string
-	inspectFuncCreateUser   func(email string, password string, role string)
+	inspectFuncCreateUser   func(ctx context.Context, email string, password string, role string)
 	afterCreateUserCounter  uint64
 	beforeCreateUserCounter uint64
 	CreateUserMock          mPostAuthMockCreateUser
@@ -68,6 +69,7 @@ type PostAuthMockCreateUserExpectation struct {
 
 // PostAuthMockCreateUserParams contains parameters of the PostAuth.CreateUser
 type PostAuthMockCreateUserParams struct {
+	ctx      context.Context
 	email    string
 	password string
 	role     string
@@ -75,6 +77,7 @@ type PostAuthMockCreateUserParams struct {
 
 // PostAuthMockCreateUserParamPtrs contains pointers to parameters of the PostAuth.CreateUser
 type PostAuthMockCreateUserParamPtrs struct {
+	ctx      *context.Context
 	email    *string
 	password *string
 	role     *string
@@ -89,6 +92,7 @@ type PostAuthMockCreateUserResults struct {
 // PostAuthMockCreateUserOrigins contains origins of expectations of the PostAuth.CreateUser
 type PostAuthMockCreateUserExpectationOrigins struct {
 	origin         string
+	originCtx      string
 	originEmail    string
 	originPassword string
 	originRole     string
@@ -105,7 +109,7 @@ func (mmCreateUser *mPostAuthMockCreateUser) Optional() *mPostAuthMockCreateUser
 }
 
 // Expect sets up expected params for PostAuth.CreateUser
-func (mmCreateUser *mPostAuthMockCreateUser) Expect(email string, password string, role string) *mPostAuthMockCreateUser {
+func (mmCreateUser *mPostAuthMockCreateUser) Expect(ctx context.Context, email string, password string, role string) *mPostAuthMockCreateUser {
 	if mmCreateUser.mock.funcCreateUser != nil {
 		mmCreateUser.mock.t.Fatalf("PostAuthMock.CreateUser mock is already set by Set")
 	}
@@ -118,7 +122,7 @@ func (mmCreateUser *mPostAuthMockCreateUser) Expect(email string, password strin
 		mmCreateUser.mock.t.Fatalf("PostAuthMock.CreateUser mock is already set by ExpectParams functions")
 	}
 
-	mmCreateUser.defaultExpectation.params = &PostAuthMockCreateUserParams{email, password, role}
+	mmCreateUser.defaultExpectation.params = &PostAuthMockCreateUserParams{ctx, email, password, role}
 	mmCreateUser.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
 	for _, e := range mmCreateUser.expectations {
 		if minimock.Equal(e.params, mmCreateUser.defaultExpectation.params) {
@@ -129,8 +133,31 @@ func (mmCreateUser *mPostAuthMockCreateUser) Expect(email string, password strin
 	return mmCreateUser
 }
 
-// ExpectEmailParam1 sets up expected param email for PostAuth.CreateUser
-func (mmCreateUser *mPostAuthMockCreateUser) ExpectEmailParam1(email string) *mPostAuthMockCreateUser {
+// ExpectCtxParam1 sets up expected param ctx for PostAuth.CreateUser
+func (mmCreateUser *mPostAuthMockCreateUser) ExpectCtxParam1(ctx context.Context) *mPostAuthMockCreateUser {
+	if mmCreateUser.mock.funcCreateUser != nil {
+		mmCreateUser.mock.t.Fatalf("PostAuthMock.CreateUser mock is already set by Set")
+	}
+
+	if mmCreateUser.defaultExpectation == nil {
+		mmCreateUser.defaultExpectation = &PostAuthMockCreateUserExpectation{}
+	}
+
+	if mmCreateUser.defaultExpectation.params != nil {
+		mmCreateUser.mock.t.Fatalf("PostAuthMock.CreateUser mock is already set by Expect")
+	}
+
+	if mmCreateUser.defaultExpectation.paramPtrs == nil {
+		mmCreateUser.defaultExpectation.paramPtrs = &PostAuthMockCreateUserParamPtrs{}
+	}
+	mmCreateUser.defaultExpectation.paramPtrs.ctx = &ctx
+	mmCreateUser.defaultExpectation.expectationOrigins.originCtx = minimock.CallerInfo(1)
+
+	return mmCreateUser
+}
+
+// ExpectEmailParam2 sets up expected param email for PostAuth.CreateUser
+func (mmCreateUser *mPostAuthMockCreateUser) ExpectEmailParam2(email string) *mPostAuthMockCreateUser {
 	if mmCreateUser.mock.funcCreateUser != nil {
 		mmCreateUser.mock.t.Fatalf("PostAuthMock.CreateUser mock is already set by Set")
 	}
@@ -152,8 +179,8 @@ func (mmCreateUser *mPostAuthMockCreateUser) ExpectEmailParam1(email string) *mP
 	return mmCreateUser
 }
 
-// ExpectPasswordParam2 sets up expected param password for PostAuth.CreateUser
-func (mmCreateUser *mPostAuthMockCreateUser) ExpectPasswordParam2(password string) *mPostAuthMockCreateUser {
+// ExpectPasswordParam3 sets up expected param password for PostAuth.CreateUser
+func (mmCreateUser *mPostAuthMockCreateUser) ExpectPasswordParam3(password string) *mPostAuthMockCreateUser {
 	if mmCreateUser.mock.funcCreateUser != nil {
 		mmCreateUser.mock.t.Fatalf("PostAuthMock.CreateUser mock is already set by Set")
 	}
@@ -175,8 +202,8 @@ func (mmCreateUser *mPostAuthMockCreateUser) ExpectPasswordParam2(password strin
 	return mmCreateUser
 }
 
-// ExpectRoleParam3 sets up expected param role for PostAuth.CreateUser
-func (mmCreateUser *mPostAuthMockCreateUser) ExpectRoleParam3(role string) *mPostAuthMockCreateUser {
+// ExpectRoleParam4 sets up expected param role for PostAuth.CreateUser
+func (mmCreateUser *mPostAuthMockCreateUser) ExpectRoleParam4(role string) *mPostAuthMockCreateUser {
 	if mmCreateUser.mock.funcCreateUser != nil {
 		mmCreateUser.mock.t.Fatalf("PostAuthMock.CreateUser mock is already set by Set")
 	}
@@ -199,7 +226,7 @@ func (mmCreateUser *mPostAuthMockCreateUser) ExpectRoleParam3(role string) *mPos
 }
 
 // Inspect accepts an inspector function that has same arguments as the PostAuth.CreateUser
-func (mmCreateUser *mPostAuthMockCreateUser) Inspect(f func(email string, password string, role string)) *mPostAuthMockCreateUser {
+func (mmCreateUser *mPostAuthMockCreateUser) Inspect(f func(ctx context.Context, email string, password string, role string)) *mPostAuthMockCreateUser {
 	if mmCreateUser.mock.inspectFuncCreateUser != nil {
 		mmCreateUser.mock.t.Fatalf("Inspect function is already set for PostAuthMock.CreateUser")
 	}
@@ -224,7 +251,7 @@ func (mmCreateUser *mPostAuthMockCreateUser) Return(rp1 *model.RegisterResp, err
 }
 
 // Set uses given function f to mock the PostAuth.CreateUser method
-func (mmCreateUser *mPostAuthMockCreateUser) Set(f func(email string, password string, role string) (rp1 *model.RegisterResp, err error)) *PostAuthMock {
+func (mmCreateUser *mPostAuthMockCreateUser) Set(f func(ctx context.Context, email string, password string, role string) (rp1 *model.RegisterResp, err error)) *PostAuthMock {
 	if mmCreateUser.defaultExpectation != nil {
 		mmCreateUser.mock.t.Fatalf("Default expectation is already set for the PostAuth.CreateUser method")
 	}
@@ -240,14 +267,14 @@ func (mmCreateUser *mPostAuthMockCreateUser) Set(f func(email string, password s
 
 // When sets expectation for the PostAuth.CreateUser which will trigger the result defined by the following
 // Then helper
-func (mmCreateUser *mPostAuthMockCreateUser) When(email string, password string, role string) *PostAuthMockCreateUserExpectation {
+func (mmCreateUser *mPostAuthMockCreateUser) When(ctx context.Context, email string, password string, role string) *PostAuthMockCreateUserExpectation {
 	if mmCreateUser.mock.funcCreateUser != nil {
 		mmCreateUser.mock.t.Fatalf("PostAuthMock.CreateUser mock is already set by Set")
 	}
 
 	expectation := &PostAuthMockCreateUserExpectation{
 		mock:               mmCreateUser.mock,
-		params:             &PostAuthMockCreateUserParams{email, password, role},
+		params:             &PostAuthMockCreateUserParams{ctx, email, password, role},
 		expectationOrigins: PostAuthMockCreateUserExpectationOrigins{origin: minimock.CallerInfo(1)},
 	}
 	mmCreateUser.expectations = append(mmCreateUser.expectations, expectation)
@@ -282,17 +309,17 @@ func (mmCreateUser *mPostAuthMockCreateUser) invocationsDone() bool {
 }
 
 // CreateUser implements PostAuth
-func (mmCreateUser *PostAuthMock) CreateUser(email string, password string, role string) (rp1 *model.RegisterResp, err error) {
+func (mmCreateUser *PostAuthMock) CreateUser(ctx context.Context, email string, password string, role string) (rp1 *model.RegisterResp, err error) {
 	mm_atomic.AddUint64(&mmCreateUser.beforeCreateUserCounter, 1)
 	defer mm_atomic.AddUint64(&mmCreateUser.afterCreateUserCounter, 1)
 
 	mmCreateUser.t.Helper()
 
 	if mmCreateUser.inspectFuncCreateUser != nil {
-		mmCreateUser.inspectFuncCreateUser(email, password, role)
+		mmCreateUser.inspectFuncCreateUser(ctx, email, password, role)
 	}
 
-	mm_params := PostAuthMockCreateUserParams{email, password, role}
+	mm_params := PostAuthMockCreateUserParams{ctx, email, password, role}
 
 	// Record call args
 	mmCreateUser.CreateUserMock.mutex.Lock()
@@ -311,9 +338,14 @@ func (mmCreateUser *PostAuthMock) CreateUser(email string, password string, role
 		mm_want := mmCreateUser.CreateUserMock.defaultExpectation.params
 		mm_want_ptrs := mmCreateUser.CreateUserMock.defaultExpectation.paramPtrs
 
-		mm_got := PostAuthMockCreateUserParams{email, password, role}
+		mm_got := PostAuthMockCreateUserParams{ctx, email, password, role}
 
 		if mm_want_ptrs != nil {
+
+			if mm_want_ptrs.ctx != nil && !minimock.Equal(*mm_want_ptrs.ctx, mm_got.ctx) {
+				mmCreateUser.t.Errorf("PostAuthMock.CreateUser got unexpected parameter ctx, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmCreateUser.CreateUserMock.defaultExpectation.expectationOrigins.originCtx, *mm_want_ptrs.ctx, mm_got.ctx, minimock.Diff(*mm_want_ptrs.ctx, mm_got.ctx))
+			}
 
 			if mm_want_ptrs.email != nil && !minimock.Equal(*mm_want_ptrs.email, mm_got.email) {
 				mmCreateUser.t.Errorf("PostAuthMock.CreateUser got unexpected parameter email, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
@@ -342,9 +374,9 @@ func (mmCreateUser *PostAuthMock) CreateUser(email string, password string, role
 		return (*mm_results).rp1, (*mm_results).err
 	}
 	if mmCreateUser.funcCreateUser != nil {
-		return mmCreateUser.funcCreateUser(email, password, role)
+		return mmCreateUser.funcCreateUser(ctx, email, password, role)
 	}
-	mmCreateUser.t.Fatalf("Unexpected call to PostAuthMock.CreateUser. %v %v %v", email, password, role)
+	mmCreateUser.t.Fatalf("Unexpected call to PostAuthMock.CreateUser. %v %v %v %v", ctx, email, password, role)
 	return
 }
 
