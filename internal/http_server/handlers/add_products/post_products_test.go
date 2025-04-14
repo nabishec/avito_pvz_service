@@ -34,7 +34,7 @@ func TestAddProducts(t *testing.T) {
 	}
 
 	t.Run("Successful addition of product", func(t *testing.T) {
-		postProductsMock.AddProductMock.Expect(context.Background(), uuid.MustParse(reqBody.PVZID), reqBody.Type).Return(&model.ProductsResp{
+		postProductsMock.AddProductMock.Expect(minimock.AnyContext, uuid.MustParse(reqBody.PVZID), reqBody.Type).Return(&model.ProductsResp{
 			ID: uuid.New(),
 		}, nil)
 
@@ -108,7 +108,7 @@ func TestAddProducts(t *testing.T) {
 	})
 
 	t.Run("Status bad request when active reception not exist", func(t *testing.T) {
-		postProductsMock.AddProductMock.Expect(context.Background(), uuid.MustParse(reqBody.PVZID), reqBody.Type).Return(nil, storage.ErrOpenReceptionNotExist)
+		postProductsMock.AddProductMock.Expect(minimock.AnyContext, uuid.MustParse(reqBody.PVZID), reqBody.Type).Return(nil, storage.ErrOpenReceptionNotExist)
 
 		req := httptest.NewRequest(http.MethodPost, "/products", bytes.NewBuffer(jsonReq))
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "client"))
@@ -126,7 +126,7 @@ func TestAddProducts(t *testing.T) {
 	})
 
 	t.Run("Internal Server Error", func(t *testing.T) {
-		postProductsMock.AddProductMock.Expect(context.Background(), uuid.MustParse(reqBody.PVZID), reqBody.Type).Return(nil, errors.New("lets tomorrow"))
+		postProductsMock.AddProductMock.Expect(minimock.AnyContext, uuid.MustParse(reqBody.PVZID), reqBody.Type).Return(nil, errors.New("lets tomorrow"))
 
 		req := httptest.NewRequest(http.MethodPost, "/products", bytes.NewBuffer(jsonReq))
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "client"))

@@ -11,7 +11,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
-	dbconnection "github.com/nabishec/avito_pvz_service/cmd/db_connection"
+	dbconnection "github.com/nabishec/avito_pvz_service/internal/app/db_connection"
 	addproducts "github.com/nabishec/avito_pvz_service/internal/http_server/handlers/add_products"
 	addpvz "github.com/nabishec/avito_pvz_service/internal/http_server/handlers/add_pvz"
 	"github.com/nabishec/avito_pvz_service/internal/http_server/handlers/auth"

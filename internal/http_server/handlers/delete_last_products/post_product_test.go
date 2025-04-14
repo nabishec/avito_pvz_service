@@ -27,7 +27,7 @@ func TestDeleteLastProduct(t *testing.T) {
 	t.Run("Successful delete last product", func(t *testing.T) {
 		pvzID := uuid.New().String()
 
-		postDeleteLastProducts.DeleteLastProductsMock.Expect(context.Background(), uuid.MustParse(pvzID)).Return(nil)
+		postDeleteLastProducts.DeleteLastProductsMock.Expect(minimock.AnyContext, uuid.MustParse(pvzID)).Return(nil)
 
 		req := httptest.NewRequest(http.MethodPost, "/pvz/"+pvzID+"/delete_last_product", nil)
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "client"))
@@ -59,7 +59,7 @@ func TestDeleteLastProduct(t *testing.T) {
 	t.Run("Status Bad Request open reception not exist", func(t *testing.T) {
 		pvzID := uuid.New().String()
 
-		postDeleteLastProducts.DeleteLastProductsMock.Expect(context.Background(), uuid.MustParse(pvzID)).Return(storage.ErrOpenReceptionNotExist)
+		postDeleteLastProducts.DeleteLastProductsMock.Expect(minimock.AnyContext, uuid.MustParse(pvzID)).Return(storage.ErrOpenReceptionNotExist)
 
 		req := httptest.NewRequest(http.MethodPost, "/pvz/"+pvzID+"/delete_last_product", nil)
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "client"))
@@ -71,7 +71,7 @@ func TestDeleteLastProduct(t *testing.T) {
 	t.Run("Status Bad Request not product in request", func(t *testing.T) {
 		pvzID := uuid.New().String()
 
-		postDeleteLastProducts.DeleteLastProductsMock.Expect(context.Background(), uuid.MustParse(pvzID)).Return(storage.ErrProductsInReceptionNotExist)
+		postDeleteLastProducts.DeleteLastProductsMock.Expect(minimock.AnyContext, uuid.MustParse(pvzID)).Return(storage.ErrProductsInReceptionNotExist)
 
 		req := httptest.NewRequest(http.MethodPost, "/pvz/"+pvzID+"/delete_last_product", nil)
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "client"))
@@ -93,7 +93,7 @@ func TestDeleteLastProduct(t *testing.T) {
 	t.Run("Status Internal Server Error", func(t *testing.T) {
 		pvzID := uuid.New().String()
 
-		postDeleteLastProducts.DeleteLastProductsMock.Expect(context.Background(), uuid.MustParse(pvzID)).Return(errors.New("good var love bad func"))
+		postDeleteLastProducts.DeleteLastProductsMock.Expect(minimock.AnyContext, uuid.MustParse(pvzID)).Return(errors.New("good var love bad func"))
 
 		req := httptest.NewRequest(http.MethodPost, "/pvz/"+pvzID+"/delete_last_product", nil)
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "client"))

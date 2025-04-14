@@ -27,7 +27,7 @@ func TestAddPVZ(t *testing.T) {
 	t.Run("Successful addition to PVZ", func(t *testing.T) {
 		city := defaultCity
 
-		postPVZMock.AddPVZMock.Expect(context.Background(), city).Return(&model.PVZResp{
+		postPVZMock.AddPVZMock.Expect(minimock.AnyContext, city).Return(&model.PVZResp{
 			ID:               uuid.New(),
 			RegistrationDate: time.Now(),
 			City:             city,
@@ -85,7 +85,7 @@ func TestAddPVZ(t *testing.T) {
 		city := defaultCity
 
 		req := httptest.NewRequest(http.MethodPost, "/pvz", bytes.NewBufferString(`{"city":"`+city+`"}`))
-		postPVZMock.AddPVZMock.Expect(context.Background(), city).Return(nil, errors.New("lazy func won't do anything"))
+		postPVZMock.AddPVZMock.Expect(minimock.AnyContext, city).Return(nil, errors.New("lazy func won't do anything"))
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "moderator"))
 		w := httptest.NewRecorder()
 		handler.AddPVZ(w, req)
