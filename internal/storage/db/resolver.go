@@ -364,27 +364,27 @@ func (r *Storage) Login(ctx context.Context, email string, password string) (use
 	return userID, role, nil
 }
 
-func (r *Storage) GetPVZListWithRecep(startDate, endDate time.Time, page, limit int) ([]*model.PVZWithRecep, error) {
+func (r *Storage) GetPVZListWithRecep(ctx context.Context, startDate, endDate time.Time, page, limit int) ([]*model.PVZWithRecep, error) {
 	op := "internal.storage.db.GetPVZListWithRecep()"
 	log.Debug().Msgf("%s start", op)
 
 	var pvzList []*model.PVZWithRecep
 	var err error
 	if startDate.IsZero() && endDate.IsZero() {
-		pvzList, err = r.getPVZListByPVZ(page, limit)
+		pvzList, err = r.getPVZListByPVZ(ctx, page, limit)
 	} else {
-		pvzList, err = r.getPVZListByReceptionsDate(startDate, endDate, page, limit)
+		pvzList, err = r.getPVZListByReceptionsDate(ctx, startDate, endDate, page, limit)
 	}
 
 	log.Debug().Msgf("%s end", startDate)
 	return pvzList, err
 }
 
-func (r *Storage) getPVZListByReceptionsDate(startDate, endDate time.Time, page, limit int) ([]*model.PVZWithRecep, error) {
+func (r *Storage) getPVZListByReceptionsDate(ctx context.Context, startDate, endDate time.Time, page, limit int) ([]*model.PVZWithRecep, error) {
 	op := "internal.storage.db.getPVZListByReceptionsDate()"
 	log.Debug().Msgf("%s start", op)
 
-	tx, err := r.db.Beginx()
+	tx, err := r.db.BeginTxx(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%s:%w", op, err)
 	}
@@ -476,11 +476,11 @@ func (r *Storage) getPVZListByReceptionsDate(startDate, endDate time.Time, page,
 	return createPVZList(pvzList, receptionsList, productsList), nil
 }
 
-func (r *Storage) getPVZListByPVZ(page, limit int) ([]*model.PVZWithRecep, error) {
+func (r *Storage) getPVZListByPVZ(ctx context.Context, page, limit int) ([]*model.PVZWithRecep, error) {
 	op := "internal.storage.db.getPVZListByPVZ()"
 	log.Debug().Msgf("%s start", op)
 
-	tx, err := r.db.Beginx()
+	tx, err := r.db.BeginTxx(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%s:%w", op, err)
 	}

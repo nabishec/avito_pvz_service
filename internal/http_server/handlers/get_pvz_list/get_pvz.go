@@ -114,7 +114,7 @@ func (h *PVZ) GetPVZList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pvzList, err := h.GetPVZ.GetPVZListWithRecep(startDateTime, endDateTime, pageInt, limitInt)
+	pvzList, err := h.GetPVZ.GetPVZListWithRecep(r.Context(), startDateTime, endDateTime, pageInt, limitInt)
 	if err != nil {
 		logger.Error().Err(err).Msg("Failed to get pvz list")
 

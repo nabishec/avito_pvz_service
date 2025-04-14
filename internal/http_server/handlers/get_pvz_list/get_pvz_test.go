@@ -1,6 +1,7 @@
 package getpvzlist
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -22,7 +23,7 @@ func TestGetPVZList(t *testing.T) {
 	endDate, _ := time.Parse(time.RFC3339, "2025-04-12T21:00:00Z")
 
 	t.Run("Successful get pvz list", func(t *testing.T) {
-		getPVZListMock.GetPVZListWithRecepMock.Expect(startDate, endDate, 1, 10).Return([]*model.PVZWithRecep{}, nil)
+		getPVZListMock.GetPVZListWithRecepMock.Expect(context.Background(), startDate, endDate, 1, 10).Return([]*model.PVZWithRecep{}, nil)
 
 		req := httptest.NewRequest(http.MethodGet, "/pvz?startDate="+startDate.Format(time.RFC3339)+"&endDate="+endDate.Format(time.RFC3339), nil)
 		w := httptest.NewRecorder()
@@ -62,7 +63,7 @@ func TestGetPVZList(t *testing.T) {
 	})
 
 	t.Run("Status Internal Server Error", func(t *testing.T) {
-		getPVZListMock.GetPVZListWithRecepMock.Expect(startDate, endDate, 1, 10).Return(nil, errors.New("today is Cosmonautics Day"))
+		getPVZListMock.GetPVZListWithRecepMock.Expect(context.Background(), startDate, endDate, 1, 10).Return(nil, errors.New("today is Cosmonautics Day"))
 
 		req := httptest.NewRequest(http.MethodGet, "/pvz?startDate="+startDate.Format(time.RFC3339)+"&endDate="+endDate.Format(time.RFC3339), nil)
 		w := httptest.NewRecorder()
