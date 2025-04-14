@@ -5,6 +5,7 @@ package opennewreceptions
 //go:generate minimock -i github.com/nabishec/avito_pvz_service/internal/http_server/handlers/open_new_receptions.PostReceptions -o post_receptions_mock_test.go -n PostReceptionsMock -p opennewreceptions
 
 import (
+	"context"
 	"sync"
 	mm_atomic "sync/atomic"
 	mm_time "time"
@@ -19,9 +20,9 @@ type PostReceptionsMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
 
-	funcAddReception          func(pvzID uuid.UUID) (rp1 *model.ReceptionsResp, err error)
+	funcAddReception          func(ctx context.Context, pvzID uuid.UUID) (rp1 *model.ReceptionsResp, err error)
 	funcAddReceptionOrigin    string
-	inspectFuncAddReception   func(pvzID uuid.UUID)
+	inspectFuncAddReception   func(ctx context.Context, pvzID uuid.UUID)
 	afterAddReceptionCounter  uint64
 	beforeAddReceptionCounter uint64
 	AddReceptionMock          mPostReceptionsMockAddReception
@@ -69,11 +70,13 @@ type PostReceptionsMockAddReceptionExpectation struct {
 
 // PostReceptionsMockAddReceptionParams contains parameters of the PostReceptions.AddReception
 type PostReceptionsMockAddReceptionParams struct {
+	ctx   context.Context
 	pvzID uuid.UUID
 }
 
 // PostReceptionsMockAddReceptionParamPtrs contains pointers to parameters of the PostReceptions.AddReception
 type PostReceptionsMockAddReceptionParamPtrs struct {
+	ctx   *context.Context
 	pvzID *uuid.UUID
 }
 
@@ -86,6 +89,7 @@ type PostReceptionsMockAddReceptionResults struct {
 // PostReceptionsMockAddReceptionOrigins contains origins of expectations of the PostReceptions.AddReception
 type PostReceptionsMockAddReceptionExpectationOrigins struct {
 	origin      string
+	originCtx   string
 	originPvzID string
 }
 
@@ -100,7 +104,7 @@ func (mmAddReception *mPostReceptionsMockAddReception) Optional() *mPostReceptio
 }
 
 // Expect sets up expected params for PostReceptions.AddReception
-func (mmAddReception *mPostReceptionsMockAddReception) Expect(pvzID uuid.UUID) *mPostReceptionsMockAddReception {
+func (mmAddReception *mPostReceptionsMockAddReception) Expect(ctx context.Context, pvzID uuid.UUID) *mPostReceptionsMockAddReception {
 	if mmAddReception.mock.funcAddReception != nil {
 		mmAddReception.mock.t.Fatalf("PostReceptionsMock.AddReception mock is already set by Set")
 	}
@@ -113,7 +117,7 @@ func (mmAddReception *mPostReceptionsMockAddReception) Expect(pvzID uuid.UUID) *
 		mmAddReception.mock.t.Fatalf("PostReceptionsMock.AddReception mock is already set by ExpectParams functions")
 	}
 
-	mmAddReception.defaultExpectation.params = &PostReceptionsMockAddReceptionParams{pvzID}
+	mmAddReception.defaultExpectation.params = &PostReceptionsMockAddReceptionParams{ctx, pvzID}
 	mmAddReception.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
 	for _, e := range mmAddReception.expectations {
 		if minimock.Equal(e.params, mmAddReception.defaultExpectation.params) {
@@ -124,8 +128,31 @@ func (mmAddReception *mPostReceptionsMockAddReception) Expect(pvzID uuid.UUID) *
 	return mmAddReception
 }
 
-// ExpectPvzIDParam1 sets up expected param pvzID for PostReceptions.AddReception
-func (mmAddReception *mPostReceptionsMockAddReception) ExpectPvzIDParam1(pvzID uuid.UUID) *mPostReceptionsMockAddReception {
+// ExpectCtxParam1 sets up expected param ctx for PostReceptions.AddReception
+func (mmAddReception *mPostReceptionsMockAddReception) ExpectCtxParam1(ctx context.Context) *mPostReceptionsMockAddReception {
+	if mmAddReception.mock.funcAddReception != nil {
+		mmAddReception.mock.t.Fatalf("PostReceptionsMock.AddReception mock is already set by Set")
+	}
+
+	if mmAddReception.defaultExpectation == nil {
+		mmAddReception.defaultExpectation = &PostReceptionsMockAddReceptionExpectation{}
+	}
+
+	if mmAddReception.defaultExpectation.params != nil {
+		mmAddReception.mock.t.Fatalf("PostReceptionsMock.AddReception mock is already set by Expect")
+	}
+
+	if mmAddReception.defaultExpectation.paramPtrs == nil {
+		mmAddReception.defaultExpectation.paramPtrs = &PostReceptionsMockAddReceptionParamPtrs{}
+	}
+	mmAddReception.defaultExpectation.paramPtrs.ctx = &ctx
+	mmAddReception.defaultExpectation.expectationOrigins.originCtx = minimock.CallerInfo(1)
+
+	return mmAddReception
+}
+
+// ExpectPvzIDParam2 sets up expected param pvzID for PostReceptions.AddReception
+func (mmAddReception *mPostReceptionsMockAddReception) ExpectPvzIDParam2(pvzID uuid.UUID) *mPostReceptionsMockAddReception {
 	if mmAddReception.mock.funcAddReception != nil {
 		mmAddReception.mock.t.Fatalf("PostReceptionsMock.AddReception mock is already set by Set")
 	}
@@ -148,7 +175,7 @@ func (mmAddReception *mPostReceptionsMockAddReception) ExpectPvzIDParam1(pvzID u
 }
 
 // Inspect accepts an inspector function that has same arguments as the PostReceptions.AddReception
-func (mmAddReception *mPostReceptionsMockAddReception) Inspect(f func(pvzID uuid.UUID)) *mPostReceptionsMockAddReception {
+func (mmAddReception *mPostReceptionsMockAddReception) Inspect(f func(ctx context.Context, pvzID uuid.UUID)) *mPostReceptionsMockAddReception {
 	if mmAddReception.mock.inspectFuncAddReception != nil {
 		mmAddReception.mock.t.Fatalf("Inspect function is already set for PostReceptionsMock.AddReception")
 	}
@@ -173,7 +200,7 @@ func (mmAddReception *mPostReceptionsMockAddReception) Return(rp1 *model.Recepti
 }
 
 // Set uses given function f to mock the PostReceptions.AddReception method
-func (mmAddReception *mPostReceptionsMockAddReception) Set(f func(pvzID uuid.UUID) (rp1 *model.ReceptionsResp, err error)) *PostReceptionsMock {
+func (mmAddReception *mPostReceptionsMockAddReception) Set(f func(ctx context.Context, pvzID uuid.UUID) (rp1 *model.ReceptionsResp, err error)) *PostReceptionsMock {
 	if mmAddReception.defaultExpectation != nil {
 		mmAddReception.mock.t.Fatalf("Default expectation is already set for the PostReceptions.AddReception method")
 	}
@@ -189,14 +216,14 @@ func (mmAddReception *mPostReceptionsMockAddReception) Set(f func(pvzID uuid.UUI
 
 // When sets expectation for the PostReceptions.AddReception which will trigger the result defined by the following
 // Then helper
-func (mmAddReception *mPostReceptionsMockAddReception) When(pvzID uuid.UUID) *PostReceptionsMockAddReceptionExpectation {
+func (mmAddReception *mPostReceptionsMockAddReception) When(ctx context.Context, pvzID uuid.UUID) *PostReceptionsMockAddReceptionExpectation {
 	if mmAddReception.mock.funcAddReception != nil {
 		mmAddReception.mock.t.Fatalf("PostReceptionsMock.AddReception mock is already set by Set")
 	}
 
 	expectation := &PostReceptionsMockAddReceptionExpectation{
 		mock:               mmAddReception.mock,
-		params:             &PostReceptionsMockAddReceptionParams{pvzID},
+		params:             &PostReceptionsMockAddReceptionParams{ctx, pvzID},
 		expectationOrigins: PostReceptionsMockAddReceptionExpectationOrigins{origin: minimock.CallerInfo(1)},
 	}
 	mmAddReception.expectations = append(mmAddReception.expectations, expectation)
@@ -231,17 +258,17 @@ func (mmAddReception *mPostReceptionsMockAddReception) invocationsDone() bool {
 }
 
 // AddReception implements PostReceptions
-func (mmAddReception *PostReceptionsMock) AddReception(pvzID uuid.UUID) (rp1 *model.ReceptionsResp, err error) {
+func (mmAddReception *PostReceptionsMock) AddReception(ctx context.Context, pvzID uuid.UUID) (rp1 *model.ReceptionsResp, err error) {
 	mm_atomic.AddUint64(&mmAddReception.beforeAddReceptionCounter, 1)
 	defer mm_atomic.AddUint64(&mmAddReception.afterAddReceptionCounter, 1)
 
 	mmAddReception.t.Helper()
 
 	if mmAddReception.inspectFuncAddReception != nil {
-		mmAddReception.inspectFuncAddReception(pvzID)
+		mmAddReception.inspectFuncAddReception(ctx, pvzID)
 	}
 
-	mm_params := PostReceptionsMockAddReceptionParams{pvzID}
+	mm_params := PostReceptionsMockAddReceptionParams{ctx, pvzID}
 
 	// Record call args
 	mmAddReception.AddReceptionMock.mutex.Lock()
@@ -260,9 +287,14 @@ func (mmAddReception *PostReceptionsMock) AddReception(pvzID uuid.UUID) (rp1 *mo
 		mm_want := mmAddReception.AddReceptionMock.defaultExpectation.params
 		mm_want_ptrs := mmAddReception.AddReceptionMock.defaultExpectation.paramPtrs
 
-		mm_got := PostReceptionsMockAddReceptionParams{pvzID}
+		mm_got := PostReceptionsMockAddReceptionParams{ctx, pvzID}
 
 		if mm_want_ptrs != nil {
+
+			if mm_want_ptrs.ctx != nil && !minimock.Equal(*mm_want_ptrs.ctx, mm_got.ctx) {
+				mmAddReception.t.Errorf("PostReceptionsMock.AddReception got unexpected parameter ctx, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmAddReception.AddReceptionMock.defaultExpectation.expectationOrigins.originCtx, *mm_want_ptrs.ctx, mm_got.ctx, minimock.Diff(*mm_want_ptrs.ctx, mm_got.ctx))
+			}
 
 			if mm_want_ptrs.pvzID != nil && !minimock.Equal(*mm_want_ptrs.pvzID, mm_got.pvzID) {
 				mmAddReception.t.Errorf("PostReceptionsMock.AddReception got unexpected parameter pvzID, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
@@ -281,9 +313,9 @@ func (mmAddReception *PostReceptionsMock) AddReception(pvzID uuid.UUID) (rp1 *mo
 		return (*mm_results).rp1, (*mm_results).err
 	}
 	if mmAddReception.funcAddReception != nil {
-		return mmAddReception.funcAddReception(pvzID)
+		return mmAddReception.funcAddReception(ctx, pvzID)
 	}
-	mmAddReception.t.Fatalf("Unexpected call to PostReceptionsMock.AddReception. %v", pvzID)
+	mmAddReception.t.Fatalf("Unexpected call to PostReceptionsMock.AddReception. %v %v", ctx, pvzID)
 	return
 }
 

@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -55,11 +56,11 @@ func (r *Storage) AddPVZ(city string) (*model.PVZResp, error) {
 	return pvz, nil
 }
 
-func (r *Storage) AddReception(pvzID uuid.UUID) (*model.ReceptionsResp, error) {
+func (r *Storage) AddReception(ctx context.Context, pvzID uuid.UUID) (*model.ReceptionsResp, error) {
 	const op = "internal.storage.db.AddReception()"
 
 	log.Debug().Msgf("%s start", op)
-	tx, err := r.db.Beginx()
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%s:%w", op, err)
 	}

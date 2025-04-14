@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -9,7 +10,7 @@ import (
 
 type StorageImp interface {
 	AddPVZ(city string) (*model.PVZResp, error)
-	AddReception(pvzID uuid.UUID) (*model.ReceptionsResp, error)
+	AddReception(ctx context.Context, pvzID uuid.UUID) (*model.ReceptionsResp, error)
 	AddProduct(pvzID uuid.UUID, productType string) (*model.ProductsResp, error)
 	DeleteLastProducts(pvzID uuid.UUID) error
 	CloseLastReceptions(pvzID uuid.UUID) error

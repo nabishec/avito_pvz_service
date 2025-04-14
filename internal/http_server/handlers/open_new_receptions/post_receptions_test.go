@@ -33,7 +33,7 @@ func TestOpenReception(t *testing.T) {
 	}
 
 	t.Run("Successful opening of reception", func(t *testing.T) {
-		postReceptionsMock.AddReceptionMock.Expect(uuid.MustParse(reqBody.PVZID)).Return(&model.ReceptionsResp{}, nil)
+		postReceptionsMock.AddReceptionMock.Expect(context.Background(), uuid.MustParse(reqBody.PVZID)).Return(&model.ReceptionsResp{}, nil)
 		req := httptest.NewRequest(http.MethodPost, "/receptions", bytes.NewBuffer(jsonReq))
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "client"))
 		w := httptest.NewRecorder()
@@ -41,7 +41,7 @@ func TestOpenReception(t *testing.T) {
 		assert.Equal(t, http.StatusCreated, w.Code)
 	})
 
-	t.Run("Status Bad Request incorrct pvzID", func(t *testing.T) {
+	t.Run("Status Bad Request incorrect pvzID", func(t *testing.T) {
 		badReqBody := model.ReceptionsReq{
 			PVZID: "hi babys",
 		}
@@ -84,7 +84,7 @@ func TestOpenReception(t *testing.T) {
 	})
 
 	t.Run("Status bad request when pvz not exist", func(t *testing.T) {
-		postReceptionsMock.AddReceptionMock.Expect(uuid.MustParse(reqBody.PVZID)).Return(nil, storage.ErrPVZNotExist)
+		postReceptionsMock.AddReceptionMock.Expect(context.Background(), uuid.MustParse(reqBody.PVZID)).Return(nil, storage.ErrPVZNotExist)
 
 		req := httptest.NewRequest(http.MethodPost, "/receptions", bytes.NewBuffer(jsonReq))
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "client"))
@@ -94,7 +94,7 @@ func TestOpenReception(t *testing.T) {
 	})
 
 	t.Run("Status bad request when previous reception not closed", func(t *testing.T) {
-		postReceptionsMock.AddReceptionMock.Expect(uuid.MustParse(reqBody.PVZID)).Return(nil, storage.ErrPreviousReceptionNotClosed)
+		postReceptionsMock.AddReceptionMock.Expect(context.Background(), uuid.MustParse(reqBody.PVZID)).Return(nil, storage.ErrPreviousReceptionNotClosed)
 
 		req := httptest.NewRequest(http.MethodPost, "/receptions", bytes.NewBuffer(jsonReq))
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "client"))
@@ -112,7 +112,7 @@ func TestOpenReception(t *testing.T) {
 	})
 
 	t.Run("Internal Server Error", func(t *testing.T) {
-		postReceptionsMock.AddReceptionMock.Expect(uuid.MustParse(reqBody.PVZID)).Return(nil, errors.New("no baby not today"))
+		postReceptionsMock.AddReceptionMock.Expect(context.Background(), uuid.MustParse(reqBody.PVZID)).Return(nil, errors.New("no baby not today"))
 
 		req := httptest.NewRequest(http.MethodPost, "/receptions", bytes.NewBuffer(jsonReq))
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "client"))

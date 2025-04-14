@@ -80,7 +80,7 @@ func (h *Receptions) AddReceptions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	receptions, err := h.PostReceptions.AddReception(pvzID)
+	receptions, err := h.PostReceptions.AddReception(r.Context(), pvzID)
 	if err != nil {
 		if err == storage.ErrPVZNotExist {
 			logger.Error().Msg("PVZ not exist yet")
