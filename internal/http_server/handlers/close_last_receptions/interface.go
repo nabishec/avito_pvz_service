@@ -1,8 +1,12 @@
 package closelastreceptions
 
-import "github.com/google/uuid"
+import (
+	"context"
+
+	"github.com/google/uuid"
+)
 
 //go:generate minimock -i PostCloseLastReceptions
 type PostCloseLastReceptions interface {
-	CloseLastReceptions(pvzID uuid.UUID) error
+	CloseLastReceptions(ctx context.Context, pvzID uuid.UUID) error
 }

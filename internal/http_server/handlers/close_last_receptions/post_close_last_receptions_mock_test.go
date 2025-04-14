@@ -5,6 +5,7 @@ package closelastreceptions
 //go:generate minimock -i github.com/nabishec/avito_pvz_service/internal/http_server/handlers/close_last_receptions.PostCloseLastReceptions -o post_close_last_receptions_mock_test.go -n PostCloseLastReceptionsMock -p closelastreceptions
 
 import (
+	"context"
 	"sync"
 	mm_atomic "sync/atomic"
 	mm_time "time"
@@ -18,9 +19,9 @@ type PostCloseLastReceptionsMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
 
-	funcCloseLastReceptions          func(pvzID uuid.UUID) (err error)
+	funcCloseLastReceptions          func(ctx context.Context, pvzID uuid.UUID) (err error)
 	funcCloseLastReceptionsOrigin    string
-	inspectFuncCloseLastReceptions   func(pvzID uuid.UUID)
+	inspectFuncCloseLastReceptions   func(ctx context.Context, pvzID uuid.UUID)
 	afterCloseLastReceptionsCounter  uint64
 	beforeCloseLastReceptionsCounter uint64
 	CloseLastReceptionsMock          mPostCloseLastReceptionsMockCloseLastReceptions
@@ -68,11 +69,13 @@ type PostCloseLastReceptionsMockCloseLastReceptionsExpectation struct {
 
 // PostCloseLastReceptionsMockCloseLastReceptionsParams contains parameters of the PostCloseLastReceptions.CloseLastReceptions
 type PostCloseLastReceptionsMockCloseLastReceptionsParams struct {
+	ctx   context.Context
 	pvzID uuid.UUID
 }
 
 // PostCloseLastReceptionsMockCloseLastReceptionsParamPtrs contains pointers to parameters of the PostCloseLastReceptions.CloseLastReceptions
 type PostCloseLastReceptionsMockCloseLastReceptionsParamPtrs struct {
+	ctx   *context.Context
 	pvzID *uuid.UUID
 }
 
@@ -84,6 +87,7 @@ type PostCloseLastReceptionsMockCloseLastReceptionsResults struct {
 // PostCloseLastReceptionsMockCloseLastReceptionsOrigins contains origins of expectations of the PostCloseLastReceptions.CloseLastReceptions
 type PostCloseLastReceptionsMockCloseLastReceptionsExpectationOrigins struct {
 	origin      string
+	originCtx   string
 	originPvzID string
 }
 
@@ -98,7 +102,7 @@ func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) Op
 }
 
 // Expect sets up expected params for PostCloseLastReceptions.CloseLastReceptions
-func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) Expect(pvzID uuid.UUID) *mPostCloseLastReceptionsMockCloseLastReceptions {
+func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) Expect(ctx context.Context, pvzID uuid.UUID) *mPostCloseLastReceptionsMockCloseLastReceptions {
 	if mmCloseLastReceptions.mock.funcCloseLastReceptions != nil {
 		mmCloseLastReceptions.mock.t.Fatalf("PostCloseLastReceptionsMock.CloseLastReceptions mock is already set by Set")
 	}
@@ -111,7 +115,7 @@ func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) Ex
 		mmCloseLastReceptions.mock.t.Fatalf("PostCloseLastReceptionsMock.CloseLastReceptions mock is already set by ExpectParams functions")
 	}
 
-	mmCloseLastReceptions.defaultExpectation.params = &PostCloseLastReceptionsMockCloseLastReceptionsParams{pvzID}
+	mmCloseLastReceptions.defaultExpectation.params = &PostCloseLastReceptionsMockCloseLastReceptionsParams{ctx, pvzID}
 	mmCloseLastReceptions.defaultExpectation.expectationOrigins.origin = minimock.CallerInfo(1)
 	for _, e := range mmCloseLastReceptions.expectations {
 		if minimock.Equal(e.params, mmCloseLastReceptions.defaultExpectation.params) {
@@ -122,8 +126,31 @@ func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) Ex
 	return mmCloseLastReceptions
 }
 
-// ExpectPvzIDParam1 sets up expected param pvzID for PostCloseLastReceptions.CloseLastReceptions
-func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) ExpectPvzIDParam1(pvzID uuid.UUID) *mPostCloseLastReceptionsMockCloseLastReceptions {
+// ExpectCtxParam1 sets up expected param ctx for PostCloseLastReceptions.CloseLastReceptions
+func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) ExpectCtxParam1(ctx context.Context) *mPostCloseLastReceptionsMockCloseLastReceptions {
+	if mmCloseLastReceptions.mock.funcCloseLastReceptions != nil {
+		mmCloseLastReceptions.mock.t.Fatalf("PostCloseLastReceptionsMock.CloseLastReceptions mock is already set by Set")
+	}
+
+	if mmCloseLastReceptions.defaultExpectation == nil {
+		mmCloseLastReceptions.defaultExpectation = &PostCloseLastReceptionsMockCloseLastReceptionsExpectation{}
+	}
+
+	if mmCloseLastReceptions.defaultExpectation.params != nil {
+		mmCloseLastReceptions.mock.t.Fatalf("PostCloseLastReceptionsMock.CloseLastReceptions mock is already set by Expect")
+	}
+
+	if mmCloseLastReceptions.defaultExpectation.paramPtrs == nil {
+		mmCloseLastReceptions.defaultExpectation.paramPtrs = &PostCloseLastReceptionsMockCloseLastReceptionsParamPtrs{}
+	}
+	mmCloseLastReceptions.defaultExpectation.paramPtrs.ctx = &ctx
+	mmCloseLastReceptions.defaultExpectation.expectationOrigins.originCtx = minimock.CallerInfo(1)
+
+	return mmCloseLastReceptions
+}
+
+// ExpectPvzIDParam2 sets up expected param pvzID for PostCloseLastReceptions.CloseLastReceptions
+func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) ExpectPvzIDParam2(pvzID uuid.UUID) *mPostCloseLastReceptionsMockCloseLastReceptions {
 	if mmCloseLastReceptions.mock.funcCloseLastReceptions != nil {
 		mmCloseLastReceptions.mock.t.Fatalf("PostCloseLastReceptionsMock.CloseLastReceptions mock is already set by Set")
 	}
@@ -146,7 +173,7 @@ func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) Ex
 }
 
 // Inspect accepts an inspector function that has same arguments as the PostCloseLastReceptions.CloseLastReceptions
-func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) Inspect(f func(pvzID uuid.UUID)) *mPostCloseLastReceptionsMockCloseLastReceptions {
+func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) Inspect(f func(ctx context.Context, pvzID uuid.UUID)) *mPostCloseLastReceptionsMockCloseLastReceptions {
 	if mmCloseLastReceptions.mock.inspectFuncCloseLastReceptions != nil {
 		mmCloseLastReceptions.mock.t.Fatalf("Inspect function is already set for PostCloseLastReceptionsMock.CloseLastReceptions")
 	}
@@ -171,7 +198,7 @@ func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) Re
 }
 
 // Set uses given function f to mock the PostCloseLastReceptions.CloseLastReceptions method
-func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) Set(f func(pvzID uuid.UUID) (err error)) *PostCloseLastReceptionsMock {
+func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) Set(f func(ctx context.Context, pvzID uuid.UUID) (err error)) *PostCloseLastReceptionsMock {
 	if mmCloseLastReceptions.defaultExpectation != nil {
 		mmCloseLastReceptions.mock.t.Fatalf("Default expectation is already set for the PostCloseLastReceptions.CloseLastReceptions method")
 	}
@@ -187,14 +214,14 @@ func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) Se
 
 // When sets expectation for the PostCloseLastReceptions.CloseLastReceptions which will trigger the result defined by the following
 // Then helper
-func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) When(pvzID uuid.UUID) *PostCloseLastReceptionsMockCloseLastReceptionsExpectation {
+func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) When(ctx context.Context, pvzID uuid.UUID) *PostCloseLastReceptionsMockCloseLastReceptionsExpectation {
 	if mmCloseLastReceptions.mock.funcCloseLastReceptions != nil {
 		mmCloseLastReceptions.mock.t.Fatalf("PostCloseLastReceptionsMock.CloseLastReceptions mock is already set by Set")
 	}
 
 	expectation := &PostCloseLastReceptionsMockCloseLastReceptionsExpectation{
 		mock:               mmCloseLastReceptions.mock,
-		params:             &PostCloseLastReceptionsMockCloseLastReceptionsParams{pvzID},
+		params:             &PostCloseLastReceptionsMockCloseLastReceptionsParams{ctx, pvzID},
 		expectationOrigins: PostCloseLastReceptionsMockCloseLastReceptionsExpectationOrigins{origin: minimock.CallerInfo(1)},
 	}
 	mmCloseLastReceptions.expectations = append(mmCloseLastReceptions.expectations, expectation)
@@ -229,17 +256,17 @@ func (mmCloseLastReceptions *mPostCloseLastReceptionsMockCloseLastReceptions) in
 }
 
 // CloseLastReceptions implements PostCloseLastReceptions
-func (mmCloseLastReceptions *PostCloseLastReceptionsMock) CloseLastReceptions(pvzID uuid.UUID) (err error) {
+func (mmCloseLastReceptions *PostCloseLastReceptionsMock) CloseLastReceptions(ctx context.Context, pvzID uuid.UUID) (err error) {
 	mm_atomic.AddUint64(&mmCloseLastReceptions.beforeCloseLastReceptionsCounter, 1)
 	defer mm_atomic.AddUint64(&mmCloseLastReceptions.afterCloseLastReceptionsCounter, 1)
 
 	mmCloseLastReceptions.t.Helper()
 
 	if mmCloseLastReceptions.inspectFuncCloseLastReceptions != nil {
-		mmCloseLastReceptions.inspectFuncCloseLastReceptions(pvzID)
+		mmCloseLastReceptions.inspectFuncCloseLastReceptions(ctx, pvzID)
 	}
 
-	mm_params := PostCloseLastReceptionsMockCloseLastReceptionsParams{pvzID}
+	mm_params := PostCloseLastReceptionsMockCloseLastReceptionsParams{ctx, pvzID}
 
 	// Record call args
 	mmCloseLastReceptions.CloseLastReceptionsMock.mutex.Lock()
@@ -258,9 +285,14 @@ func (mmCloseLastReceptions *PostCloseLastReceptionsMock) CloseLastReceptions(pv
 		mm_want := mmCloseLastReceptions.CloseLastReceptionsMock.defaultExpectation.params
 		mm_want_ptrs := mmCloseLastReceptions.CloseLastReceptionsMock.defaultExpectation.paramPtrs
 
-		mm_got := PostCloseLastReceptionsMockCloseLastReceptionsParams{pvzID}
+		mm_got := PostCloseLastReceptionsMockCloseLastReceptionsParams{ctx, pvzID}
 
 		if mm_want_ptrs != nil {
+
+			if mm_want_ptrs.ctx != nil && !minimock.Equal(*mm_want_ptrs.ctx, mm_got.ctx) {
+				mmCloseLastReceptions.t.Errorf("PostCloseLastReceptionsMock.CloseLastReceptions got unexpected parameter ctx, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
+					mmCloseLastReceptions.CloseLastReceptionsMock.defaultExpectation.expectationOrigins.originCtx, *mm_want_ptrs.ctx, mm_got.ctx, minimock.Diff(*mm_want_ptrs.ctx, mm_got.ctx))
+			}
 
 			if mm_want_ptrs.pvzID != nil && !minimock.Equal(*mm_want_ptrs.pvzID, mm_got.pvzID) {
 				mmCloseLastReceptions.t.Errorf("PostCloseLastReceptionsMock.CloseLastReceptions got unexpected parameter pvzID, expected at\n%s:\nwant: %#v\n got: %#v%s\n",
@@ -279,9 +311,9 @@ func (mmCloseLastReceptions *PostCloseLastReceptionsMock) CloseLastReceptions(pv
 		return (*mm_results).err
 	}
 	if mmCloseLastReceptions.funcCloseLastReceptions != nil {
-		return mmCloseLastReceptions.funcCloseLastReceptions(pvzID)
+		return mmCloseLastReceptions.funcCloseLastReceptions(ctx, pvzID)
 	}
-	mmCloseLastReceptions.t.Fatalf("Unexpected call to PostCloseLastReceptionsMock.CloseLastReceptions. %v", pvzID)
+	mmCloseLastReceptions.t.Fatalf("Unexpected call to PostCloseLastReceptionsMock.CloseLastReceptions. %v %v", ctx, pvzID)
 	return
 }
 

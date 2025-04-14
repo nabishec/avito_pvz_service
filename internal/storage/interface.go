@@ -13,7 +13,7 @@ type StorageImp interface {
 	AddReception(ctx context.Context, pvzID uuid.UUID) (*model.ReceptionsResp, error)
 	AddProduct(pvzID uuid.UUID, productType string) (*model.ProductsResp, error)
 	DeleteLastProducts(ctx context.Context, pvzID uuid.UUID) error
-	CloseLastReceptions(pvzID uuid.UUID) error
+	CloseLastReceptions(ctx context.Context, pvzID uuid.UUID) error
 	CreateUser(email string, password string, role string) (*model.RegisterResp, error)
 	Login(ctx context.Context, email string, password string) (userID uuid.UUID, role string, err error)
 	GetPVZListWithRecep(ctx context.Context, startDate, endDate time.Time, page, limit int) ([]*model.PVZWithRecep, error)

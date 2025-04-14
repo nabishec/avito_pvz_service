@@ -27,7 +27,7 @@ func TestCloseLastReception(t *testing.T) {
 	t.Run("Successful close last reception", func(t *testing.T) {
 		pvzID := uuid.New().String()
 
-		postCloseLastReceptionsMock.CloseLastReceptionsMock.Expect(uuid.MustParse(pvzID)).Return(nil)
+		postCloseLastReceptionsMock.CloseLastReceptionsMock.Expect(context.Background(), uuid.MustParse(pvzID)).Return(nil)
 
 		req := httptest.NewRequest(http.MethodPost, "/pvz/"+pvzID+"/close_last_reception", nil)
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "client"))
@@ -59,7 +59,7 @@ func TestCloseLastReception(t *testing.T) {
 	t.Run("Status Bad Request open reception not exist", func(t *testing.T) {
 		pvzID := uuid.New().String()
 
-		postCloseLastReceptionsMock.CloseLastReceptionsMock.Expect(uuid.MustParse(pvzID)).Return(storage.ErrOpenReceptionNotExist)
+		postCloseLastReceptionsMock.CloseLastReceptionsMock.Expect(context.Background(), uuid.MustParse(pvzID)).Return(storage.ErrOpenReceptionNotExist)
 
 		req := httptest.NewRequest(http.MethodPost, "/pvz/"+pvzID+"/close_last_reception", nil)
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "client"))
@@ -71,7 +71,7 @@ func TestCloseLastReception(t *testing.T) {
 	t.Run("Status forbidden", func(t *testing.T) {
 		pvzID := uuid.New().String()
 
-		postCloseLastReceptionsMock.CloseLastReceptionsMock.Expect(uuid.MustParse(pvzID)).Return(nil)
+		postCloseLastReceptionsMock.CloseLastReceptionsMock.Expect(context.Background(), uuid.MustParse(pvzID)).Return(nil)
 
 		req := httptest.NewRequest(http.MethodPost, "/pvz/"+pvzID+"/close_last_reception", nil)
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "moderator"))
@@ -83,7 +83,7 @@ func TestCloseLastReception(t *testing.T) {
 	t.Run("Status Internal Server Error", func(t *testing.T) {
 		pvzID := uuid.New().String()
 
-		postCloseLastReceptionsMock.CloseLastReceptionsMock.Expect(uuid.MustParse(pvzID)).Return(errors.New("not today baby"))
+		postCloseLastReceptionsMock.CloseLastReceptionsMock.Expect(context.Background(), uuid.MustParse(pvzID)).Return(errors.New("not today baby"))
 
 		req := httptest.NewRequest(http.MethodPost, "/pvz/"+pvzID+"/close_last_reception", nil)
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "client"))

@@ -68,7 +68,7 @@ func (h *CloseLastReceptions) CloseLastReceptions(w http.ResponseWriter, r *http
 		return
 	}
 
-	err = h.PostCloseLastReceptions.CloseLastReceptions(pvzID)
+	err = h.PostCloseLastReceptions.CloseLastReceptions(r.Context(), pvzID)
 	if err != nil {
 		if err == storage.ErrOpenReceptionNotExist {
 			logger.Error().Msg("Active reception not exist")

@@ -233,10 +233,10 @@ func (r *Storage) DeleteLastProducts(ctx context.Context, pvzID uuid.UUID) error
 }
 
 // this function can write without transaction, because it is not critical for the system
-func (r *Storage) CloseLastReceptions(pvzID uuid.UUID) error {
+func (r *Storage) CloseLastReceptions(ctx context.Context, pvzID uuid.UUID) error {
 	op := "internal.storage.db.CloseLastReceptions()"
 	log.Debug().Msgf("%s start", op)
-	tx, err := r.db.Beginx()
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("%s:%w", op, err)
 	}
