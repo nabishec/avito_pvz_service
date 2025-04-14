@@ -31,7 +31,6 @@ func TestGetPVZList(t *testing.T) {
 	})
 
 	t.Run("Status Bad Request incorrect Date", func(t *testing.T) {
-
 		req := httptest.NewRequest(http.MethodGet, "/pvz?startDate="+"yesterday"+"&endDate="+endDate.Format(time.RFC3339), nil)
 		w := httptest.NewRecorder()
 		handler.GetPVZList(w, req)
@@ -39,7 +38,6 @@ func TestGetPVZList(t *testing.T) {
 	})
 
 	t.Run("Status Bad Request incorrect page", func(t *testing.T) {
-
 		req := httptest.NewRequest(http.MethodGet, "/pvz?startDate="+startDate.Format(time.RFC3339)+
 			"&endDate="+endDate.Format(time.RFC3339)+"&page=0", nil)
 		w := httptest.NewRecorder()
@@ -48,7 +46,6 @@ func TestGetPVZList(t *testing.T) {
 	})
 
 	t.Run("Status Bad Request incorrect limit", func(t *testing.T) {
-
 		req := httptest.NewRequest(http.MethodGet, "/pvz?startDate="+startDate.Format(time.RFC3339)+
 			"&endDate="+endDate.Format(time.RFC3339)+"&limit=35", nil)
 		w := httptest.NewRecorder()

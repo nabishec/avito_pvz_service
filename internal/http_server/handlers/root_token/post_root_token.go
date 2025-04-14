@@ -12,8 +12,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type RootToken struct {
-}
+type RootToken struct{}
 
 func NewRootToken() *RootToken {
 	return &RootToken{}

@@ -45,10 +45,10 @@ func (h *PVZ) GetPVZList(w http.ResponseWriter, r *http.Request) {
 
 	defaultLimit := 10
 
-	var startDate = r.URL.Query().Get("startDate")
-	var endDate = r.URL.Query().Get("endDate")
-	var page = r.URL.Query().Get("page")
-	var limit = r.URL.Query().Get("limit")
+	startDate := r.URL.Query().Get("startDate")
+	endDate := r.URL.Query().Get("endDate")
+	page := r.URL.Query().Get("page")
+	limit := r.URL.Query().Get("limit")
 
 	var startDateTime time.Time
 	var endDateTime time.Time

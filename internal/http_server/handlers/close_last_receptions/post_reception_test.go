@@ -34,7 +34,6 @@ func TestCloseLastReception(t *testing.T) {
 		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)
 		assert.Equal(t, http.StatusOK, w.Code)
-
 	})
 
 	t.Run("Status Bad Request empty pvzID", func(t *testing.T) {
@@ -45,11 +44,9 @@ func TestCloseLastReception(t *testing.T) {
 		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
-
 	})
 
 	t.Run("Status Bad Request incorrect pvzID", func(t *testing.T) {
-
 		pvzID := "badpvzID"
 
 		req := httptest.NewRequest(http.MethodPost, "/pvz/"+pvzID+"/close_last_reception", nil)
@@ -57,7 +54,6 @@ func TestCloseLastReception(t *testing.T) {
 		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
-
 	})
 
 	t.Run("Status Bad Request open reception not exist", func(t *testing.T) {
@@ -70,7 +66,6 @@ func TestCloseLastReception(t *testing.T) {
 		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
-
 	})
 
 	t.Run("Status forbidden", func(t *testing.T) {
@@ -83,7 +78,6 @@ func TestCloseLastReception(t *testing.T) {
 		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)
 		assert.Equal(t, http.StatusForbidden, w.Code)
-
 	})
 
 	t.Run("Status Internal Server Error", func(t *testing.T) {

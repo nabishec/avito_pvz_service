@@ -16,6 +16,8 @@ import (
 	"github.com/nabishec/avito_pvz_service/internal/model"
 )
 
+const defaultCity = "Москва"
+
 func TestAddPVZ(t *testing.T) {
 	mc := minimock.NewController(t)
 
@@ -23,7 +25,7 @@ func TestAddPVZ(t *testing.T) {
 	handler := PVZ{PostPVZ: postPVZMock}
 
 	t.Run("Successful addition to PVZ", func(t *testing.T) {
-		city := "Москва"
+		city := defaultCity
 
 		postPVZMock.AddPVZMock.Expect(city).Return(&model.PVZResp{
 			ID:               uuid.New(),
@@ -37,7 +39,6 @@ func TestAddPVZ(t *testing.T) {
 		w := httptest.NewRecorder()
 		handler.AddPVZ(w, req)
 		assert.Equal(t, http.StatusCreated, w.Code)
-
 	})
 
 	t.Run("Status Bad Request incorrect city", func(t *testing.T) {
@@ -49,33 +50,28 @@ func TestAddPVZ(t *testing.T) {
 		w := httptest.NewRecorder()
 		handler.AddPVZ(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
-
 	})
 
 	t.Run("Status Bad Request incorrect body", func(t *testing.T) {
-
 		req := httptest.NewRequest(http.MethodPost, "/pvz", bytes.NewBufferString(`badreq`))
 
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "moderator"))
 		w := httptest.NewRecorder()
 		handler.AddPVZ(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
-
 	})
 
 	t.Run("Status Bad Request is no required value", func(t *testing.T) {
-
 		req := httptest.NewRequest(http.MethodPost, "/pvz", bytes.NewBufferString(`{"city":""}`))
 
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "moderator"))
 		w := httptest.NewRecorder()
 		handler.AddPVZ(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
-
 	})
 
 	t.Run("Status forbidden", func(t *testing.T) {
-		city := "Москва"
+		city := defaultCity
 
 		req := httptest.NewRequest(http.MethodPost, "/pvz", bytes.NewBufferString(`{"city":"`+city+`"}`))
 
@@ -83,11 +79,10 @@ func TestAddPVZ(t *testing.T) {
 		w := httptest.NewRecorder()
 		handler.AddPVZ(w, req)
 		assert.Equal(t, http.StatusForbidden, w.Code)
-
 	})
 
 	t.Run("Status Internal Server Error", func(t *testing.T) {
-		city := "Москва"
+		city := defaultCity
 
 		req := httptest.NewRequest(http.MethodPost, "/pvz", bytes.NewBufferString(`{"city":"`+city+`"}`))
 		postPVZMock.AddPVZMock.Expect(city).Return(nil, errors.New("lazy func won't do anything"))
@@ -95,7 +90,5 @@ func TestAddPVZ(t *testing.T) {
 		w := httptest.NewRecorder()
 		handler.AddPVZ(w, req)
 		assert.Equal(t, http.StatusInternalServerError, w.Code)
-
 	})
-
 }

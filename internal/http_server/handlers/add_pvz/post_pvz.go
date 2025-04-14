@@ -70,7 +70,7 @@ func (h *PVZ) AddPVZ(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var cityes = []string{"Москва", "Санкт-Петербург", "Казань"}
+	cityes := []string{"Москва", "Санкт-Петербург", "Казань"}
 	cityCorrect := slices.Contains(cityes, pvzReq.City)
 	if !cityCorrect {
 		logger.Error().Err(err).Msg("Incorrect city in request body")

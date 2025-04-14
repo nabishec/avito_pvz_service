@@ -22,7 +22,6 @@ func NewGRPCServer(storage storage.StorageImp) *grpcServer {
 }
 
 func (s *grpcServer) Run() error {
-
 	addr := ":" + os.Getenv("GRPC_SERVER_PORT")
 
 	lis, err := net.Listen("tcp", addr)
@@ -35,5 +34,4 @@ func (s *grpcServer) Run() error {
 	log.Info().Msgf("Start grpc server on %s", addr)
 
 	return grpcServer.Serve(lis)
-
 }

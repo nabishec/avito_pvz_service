@@ -25,6 +25,11 @@ func NewStorage(db *sqlx.DB) *Storage {
 	}
 }
 
+const querySelectOpenReceptions = `SELECT id 
+								  FROM receptions
+								  WHERE pvz_id = $1
+								  AND status = 'in_progress'`
+
 func (r *Storage) AddPVZ(city string) (*model.PVZResp, error) {
 	const op = "internal.storage.db.AddPVZ()"
 
@@ -48,7 +53,6 @@ func (r *Storage) AddPVZ(city string) (*model.PVZResp, error) {
 	log.Debug().Msgf("%s end", op)
 
 	return pvz, nil
-
 }
 
 func (r *Storage) AddReception(pvzID uuid.UUID) (*model.ReceptionsResp, error) {
@@ -74,11 +78,6 @@ func (r *Storage) AddReception(pvzID uuid.UUID) (*model.ReceptionsResp, error) {
 		Status:   "in_progress",
 	}
 
-	queryOpenReceptions := `SELECT id 
-								FROM receptions 
-								WHERE pvz_id = $1 	
-								AND status = 'in_progress'`
-
 	queryPVZExist := `SELECT id
 						FROM pvzs
 						WHERE id = $1`
@@ -95,7 +94,7 @@ func (r *Storage) AddReception(pvzID uuid.UUID) (*model.ReceptionsResp, error) {
 	}
 
 	var previousReceptionID uuid.UUID
-	err = tx.QueryRow(queryOpenReceptions, pvzID).Scan(&previousReceptionID)
+	err = tx.QueryRow(querySelectOpenReceptions, pvzID).Scan(&previousReceptionID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
@@ -123,7 +122,6 @@ func (r *Storage) AddReception(pvzID uuid.UUID) (*model.ReceptionsResp, error) {
 	log.Debug().Msgf("%s end", op)
 
 	return receptions, nil
-
 }
 
 func (r *Storage) AddProduct(pvzID uuid.UUID, productType string) (*model.ProductsResp, error) {
@@ -149,15 +147,10 @@ func (r *Storage) AddProduct(pvzID uuid.UUID, productType string) (*model.Produc
 		Type:     productType,
 	}
 
-	queryOpenReceptions := `SELECT id 
-								FROM receptions 
-								WHERE pvz_id = $1 	
-								AND status = 'in_progress'`
-
 	queryAddReceptions := `INSERT INTO products (id, reception_id, type, registration_date)
 						VALUES ($1, $2, $3, $4)`
 
-	err = tx.QueryRow(queryOpenReceptions, pvzID).Scan(&product.ReceptionID)
+	err = tx.QueryRow(querySelectOpenReceptions, pvzID).Scan(&product.ReceptionID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			err = storage.ErrOpenReceptionNotExist
@@ -178,7 +171,6 @@ func (r *Storage) AddProduct(pvzID uuid.UUID, productType string) (*model.Produc
 	log.Debug().Msgf("%s end", op)
 
 	return product, nil
-
 }
 
 func (r *Storage) DeleteLastProducts(pvzID uuid.UUID) error {
@@ -197,11 +189,6 @@ func (r *Storage) DeleteLastProducts(pvzID uuid.UUID) error {
 		}
 	}()
 
-	queryOpenReceptions := `SELECT id 
-								FROM receptions 
-								WHERE pvz_id = $1 	
-								AND status = 'in_progress'`
-
 	queryDeleteLastProduct := `DELETE FROM products
 								WHERE id = (SELECT id
 								FROM products		
@@ -211,7 +198,7 @@ func (r *Storage) DeleteLastProducts(pvzID uuid.UUID) error {
 								RETURNING id`
 
 	var receptionID uuid.UUID
-	err = tx.QueryRow(queryOpenReceptions, pvzID).Scan(&receptionID)
+	err = tx.QueryRow(querySelectOpenReceptions, pvzID).Scan(&receptionID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			err = storage.ErrOpenReceptionNotExist
@@ -261,17 +248,12 @@ func (r *Storage) CloseLastReceptions(pvzID uuid.UUID) error {
 		}
 	}()
 
-	queryOpenReceptions := `SELECT id 
-								FROM receptions 
-								WHERE pvz_id = $1 	
-								AND status = 'in_progress'`
-
 	queryCloseLastReceptions := `UPDATE receptions
 								SET status = 'closed'	
 								WHERE id = $1`
 
 	var receptionID uuid.UUID
-	err = tx.QueryRow(queryOpenReceptions, pvzID).Scan(&receptionID)
+	err = tx.QueryRow(querySelectOpenReceptions, pvzID).Scan(&receptionID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			err = storage.ErrOpenReceptionNotExist
@@ -379,7 +361,6 @@ func (r *Storage) Login(email string, password string) (userID uuid.UUID, role s
 
 	log.Debug().Msgf("%s end", op)
 	return userID, role, nil
-
 }
 
 func (r *Storage) GetPVZListWithRecep(startDate, endDate time.Time, page, limit int) ([]*model.PVZWithRecep, error) {
@@ -604,7 +585,6 @@ func createPVZList(pvzList []*model.PVZResp, receptionsList []*model.ReceptionsR
 		}
 
 		for _, reception := range receptionsList {
-
 			if reception.PVZID == pvz.ID {
 
 				receptionsItem := &model.ReceptionsItem{

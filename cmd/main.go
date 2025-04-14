@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-
 	"sync"
 
 	"github.com/joho/godotenv"
@@ -37,7 +36,7 @@ func main() {
 	if *debug {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
-	//for easy reading
+	// for easy reading
 	if *easyReading {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}

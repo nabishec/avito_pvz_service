@@ -65,7 +65,6 @@ func (s *httpServer) MountHandlers() {
 		r.Post("/pvz/{pvzId}/close_last_reception", closeLastReceptions.CloseLastReceptions)
 		r.Get("/pvz", pvzList.GetPVZList)
 	})
-
 }
 
 func (s *httpServer) Run() error {

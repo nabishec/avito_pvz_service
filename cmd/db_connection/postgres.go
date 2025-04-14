@@ -60,7 +60,7 @@ func (db *DatabaseConnection) PingDatabase() error {
 		return fmt.Errorf("%s:%s", op, "database connection is not established")
 	}
 
-	var pingError = db.DB.Ping()
+	pingError := db.DB.Ping()
 	if pingError != nil {
 		return fmt.Errorf("%s:%w", op, pingError)
 	}
@@ -73,7 +73,7 @@ func (db *DatabaseConnection) CloseDatabase() error {
 	const op = "cmd.dbconnection.CloseDatabase()"
 
 	log.Info().Msg("Attempting to close database")
-	var closingError = db.DB.Close()
+	closingError := db.DB.Close()
 	if closingError != nil {
 		return fmt.Errorf("%s:%w", op, closingError)
 	}

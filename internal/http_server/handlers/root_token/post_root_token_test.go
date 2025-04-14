@@ -12,7 +12,6 @@ import (
 )
 
 func TestPostRootToken(t *testing.T) {
-
 	handler := RootToken{}
 
 	reqBody := model.RootTokenReq{
@@ -25,7 +24,6 @@ func TestPostRootToken(t *testing.T) {
 	}
 
 	t.Run("Successful get root roken", func(t *testing.T) {
-
 		req := httptest.NewRequest(http.MethodPost, "/dummyLogin", bytes.NewBuffer(jsonReq))
 		w := httptest.NewRecorder()
 		handler.ReturnRootToken(w, req)
@@ -33,7 +31,6 @@ func TestPostRootToken(t *testing.T) {
 	})
 
 	t.Run("Status Bad Request incorrect body", func(t *testing.T) {
-
 		req := httptest.NewRequest(http.MethodPost, "/dummyLogin", bytes.NewBufferString(`im tired`))
 		w := httptest.NewRecorder()
 		handler.ReturnRootToken(w, req)
@@ -71,5 +68,4 @@ func TestPostRootToken(t *testing.T) {
 		handler.ReturnRootToken(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
-
 }

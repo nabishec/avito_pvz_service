@@ -72,7 +72,7 @@ func (h *Products) AddProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var types = []string{"электроника", "одежда", "обувь"}
+	types := []string{"электроника", "одежда", "обувь"}
 	typesCorrect := slices.Contains(types, productsReq.Type)
 	if !typesCorrect {
 		logger.Error().Err(err).Msg("Incorrect product in request body")

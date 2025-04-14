@@ -16,9 +16,9 @@ type DeleteLastProducts struct {
 	PostDeleteLastProducts PostDeleteLastProducts
 }
 
-func NewDeleteProducts(PostDeleteLastProducts PostDeleteLastProducts) *DeleteLastProducts {
+func NewDeleteProducts(postDeleteLastProducts PostDeleteLastProducts) *DeleteLastProducts {
 	return &DeleteLastProducts{
-		PostDeleteLastProducts: PostDeleteLastProducts,
+		PostDeleteLastProducts: postDeleteLastProducts,
 	}
 }
 

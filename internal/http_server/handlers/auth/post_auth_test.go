@@ -33,7 +33,6 @@ func TestAuth(t *testing.T) {
 	}
 
 	t.Run("Successful registration", func(t *testing.T) {
-
 		postAuthMock.CreateUserMock.Expect(reqBody.Email, reqBody.Password, reqBody.Role).Return(&model.RegisterResp{
 			ID:    uuid.New(),
 			Email: reqBody.Email,
@@ -46,7 +45,6 @@ func TestAuth(t *testing.T) {
 	})
 
 	t.Run("Status Bad Request incorrect role", func(t *testing.T) {
-
 		badReqBody := model.RegisterReq{
 			Email:    "bigballs@men.ru",
 			Password: "hasbik",
@@ -65,7 +63,6 @@ func TestAuth(t *testing.T) {
 	})
 
 	t.Run("Status Bad Request incorrect body", func(t *testing.T) {
-
 		req := httptest.NewRequest(http.MethodPost, "/register", bytes.NewBufferString(`badreq`))
 
 		w := httptest.NewRecorder()
@@ -92,7 +89,6 @@ func TestAuth(t *testing.T) {
 	})
 
 	t.Run("Status bad request user exist", func(t *testing.T) {
-
 		postAuthMock.CreateUserMock.Expect(reqBody.Email, reqBody.Password, reqBody.Role).Return(nil, storage.ErrUserAlreadyExist)
 
 		req := httptest.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(jsonReq))
@@ -102,7 +98,6 @@ func TestAuth(t *testing.T) {
 	})
 
 	t.Run("Internal Server Error", func(t *testing.T) {
-
 		postAuthMock.CreateUserMock.Expect(reqBody.Email, reqBody.Password, reqBody.Role).Return(nil, errors.New("not for u"))
 
 		req := httptest.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(jsonReq))
@@ -110,5 +105,4 @@ func TestAuth(t *testing.T) {
 		handler.Register(w, req)
 		assert.Equal(t, http.StatusInternalServerError, w.Code)
 	})
-
 }

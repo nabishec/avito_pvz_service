@@ -39,11 +39,11 @@ func testGetTokenForClient(t *testing.T, s *httpServer, role string) string {
 	req, _ := http.NewRequest("POST", "/dummyLogin", bytes.NewBuffer(jsonReq))
 	req.Header.Set("Content-Type", "application/json")
 
-	responce := executeRequest(req, s)
-	checkResponseCode(t, http.StatusOK, responce.Code)
+	response := executeRequest(req, s)
+	checkResponseCode(t, http.StatusOK, response.Code)
 
 	var authResp model.AuthResponse
-	err = json.Unmarshal(responce.Body.Bytes(), &authResp)
+	err = json.Unmarshal(response.Body.Bytes(), &authResp)
 	if err != nil {
 		t.Fatal("failed to unmarshal response body")
 	}
@@ -108,7 +108,6 @@ func TestService(t *testing.T) {
 
 		response := executeRequest(req, s)
 		checkResponseCode(t, http.StatusCreated, response.Code)
-
 	})
 
 	t.Run("Add Product", func(t *testing.T) {

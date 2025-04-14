@@ -42,13 +42,13 @@ func NewMetrics(metricsRecorder MetricsRecorder) *Metrics {
 		metricsRecorder: metricsRecorder,
 	}
 }
+
 func (r *Metrics) CheckMetricsFromDBCircle() {
 	const op = "internal.metrics.CheckMetricsFromDB()"
 	for {
 		pvzs, receptions, products, err := r.metricsRecorder.GetValuesForMetrics()
 		if err != nil {
 			log.Error().Err(err).Msgf("%s: failed get number of pvz", op)
-
 		}
 
 		PVZCounter.WithLabelValues("pvz").Set(float64(pvzs))

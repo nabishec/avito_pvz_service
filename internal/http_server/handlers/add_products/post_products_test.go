@@ -34,7 +34,6 @@ func TestAddProducts(t *testing.T) {
 	}
 
 	t.Run("Successful addition of product", func(t *testing.T) {
-
 		postProductsMock.AddProductMock.Expect(uuid.MustParse(reqBody.PVZID), reqBody.Type).Return(&model.ProductsResp{
 			ID: uuid.New(),
 		}, nil)
@@ -83,7 +82,6 @@ func TestAddProducts(t *testing.T) {
 	})
 
 	t.Run("Status Bad Request incorrect body", func(t *testing.T) {
-
 		req := httptest.NewRequest(http.MethodPost, "/products", bytes.NewBufferString(`badreq`))
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "client"))
 		w := httptest.NewRecorder()
@@ -110,7 +108,6 @@ func TestAddProducts(t *testing.T) {
 	})
 
 	t.Run("Status bad request when active reception not exist", func(t *testing.T) {
-
 		postProductsMock.AddProductMock.Expect(uuid.MustParse(reqBody.PVZID), reqBody.Type).Return(nil, storage.ErrOpenReceptionNotExist)
 
 		req := httptest.NewRequest(http.MethodPost, "/products", bytes.NewBuffer(jsonReq))
@@ -121,7 +118,6 @@ func TestAddProducts(t *testing.T) {
 	})
 
 	t.Run("Status Fobidden", func(t *testing.T) {
-
 		req := httptest.NewRequest(http.MethodPost, "/products", bytes.NewBuffer(jsonReq))
 		req = req.WithContext(context.WithValue(req.Context(), middleware.RequestUserRoleKey, "moderator"))
 		w := httptest.NewRecorder()
@@ -130,7 +126,6 @@ func TestAddProducts(t *testing.T) {
 	})
 
 	t.Run("Internal Server Error", func(t *testing.T) {
-
 		postProductsMock.AddProductMock.Expect(uuid.MustParse(reqBody.PVZID), reqBody.Type).Return(nil, errors.New("lets tomorrow"))
 
 		req := httptest.NewRequest(http.MethodPost, "/products", bytes.NewBuffer(jsonReq))
@@ -139,5 +134,4 @@ func TestAddProducts(t *testing.T) {
 		handler.AddProducts(w, req)
 		assert.Equal(t, http.StatusInternalServerError, w.Code)
 	})
-
 }

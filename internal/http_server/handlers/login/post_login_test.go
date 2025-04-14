@@ -32,7 +32,6 @@ func TestLogin(t *testing.T) {
 	}
 
 	t.Run("Successful login", func(t *testing.T) {
-
 		postLoginMock.LoginMock.Expect(reqBody.Email, reqBody.Password).Return(uuid.New(), "client", nil)
 		req := httptest.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(jsonReq))
 		w := httptest.NewRecorder()
@@ -41,7 +40,6 @@ func TestLogin(t *testing.T) {
 	})
 
 	t.Run("Status Bad Request incorrect body", func(t *testing.T) {
-
 		req := httptest.NewRequest(http.MethodPost, "/login", bytes.NewBufferString(`whats up`))
 
 		w := httptest.NewRecorder()
@@ -67,7 +65,6 @@ func TestLogin(t *testing.T) {
 	})
 
 	t.Run("Status Unauthorized user not exist", func(t *testing.T) {
-
 		postLoginMock.LoginMock.Expect(reqBody.Email, reqBody.Password).Return(uuid.Nil, "", storage.ErrUserNotExist)
 
 		req := httptest.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(jsonReq))
@@ -77,7 +74,6 @@ func TestLogin(t *testing.T) {
 	})
 
 	t.Run("Status Unauthorized incorrect password of user", func(t *testing.T) {
-
 		postLoginMock.LoginMock.Expect(reqBody.Email, reqBody.Password).Return(uuid.Nil, "", storage.ErrPasswordIsWrong)
 
 		req := httptest.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(jsonReq))
@@ -87,7 +83,6 @@ func TestLogin(t *testing.T) {
 	})
 
 	t.Run("Status Unauthorized incorrect password is empty", func(t *testing.T) {
-
 		postLoginMock.LoginMock.Expect(reqBody.Email, reqBody.Password).Return(uuid.Nil, "", storage.ErrPasswordIsEmpty)
 
 		req := httptest.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(jsonReq))
@@ -97,7 +92,6 @@ func TestLogin(t *testing.T) {
 	})
 
 	t.Run("Internal Server Error", func(t *testing.T) {
-
 		postLoginMock.LoginMock.Expect(reqBody.Email, reqBody.Password).Return(uuid.Nil, "", errors.New("its bad time to work"))
 
 		req := httptest.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(jsonReq))

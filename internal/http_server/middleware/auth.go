@@ -12,11 +12,15 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type ctxKeyRequestUserID string
-type ctxKeyRequestUserRole string
+type (
+	ctxKeyRequestUserID   string
+	ctxKeyRequestUserRole string
+)
 
-const RequestUserRoleKey ctxKeyRequestUserRole = "user_role"
-const RequestUserIDKey ctxKeyRequestUserID = "user_id"
+const (
+	RequestUserRoleKey ctxKeyRequestUserRole = "user_role"
+	RequestUserIDKey   ctxKeyRequestUserID   = "user_id"
+)
 
 func Auth(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +58,6 @@ func Auth(next http.Handler) http.Handler {
 		}
 
 		requestUserID, requestUserRole, err := token.CheckJWT(auth[1])
-
 		if err != nil {
 			logger.Error().Err(err)
 
